@@ -1,20 +1,22 @@
-from django.contrib.auth.models import User
-from django.db import connection
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser, FileUploadParser
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
 
 from number.models import Number
-from my_user.serializers import UserSerializer
 from rest_framework.generics import get_object_or_404, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from my_user.serializers import UserSerializer, MyTokenObtainPairSerializer
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
 
 class UserCreateView(CreateAPIView):
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny]
     queryset = get_user_model()
     serializer_class = UserSerializer
 
