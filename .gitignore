@@ -1,3 +1,11 @@
+# Frontend files
+/frontend/node_modules
+/frontend/.env
+/frontend/.nuxt
+/frontend/.nuxt-storybook
+/frontend/storybook-static
+/frontend/dbmock
+
 # Byte-compiled / optimized / DLL files
 /media
 __pycache__/
