@@ -1,12 +1,14 @@
 <template>
   <v-app dark>
-    <Speed />
+    <Menu />
+    <Speed3 />
     <v-main>
       <v-container>
         <nuxt />
       </v-container>
     </v-main>
     <Drawer />
+    <Snackbar />
   </v-app>
 </template>
 

@@ -99,7 +99,6 @@
               показать пароль
             </label>
           </div>
-          <!-- // script for show password 5490205379829-->
         </div>
 
         <div
@@ -120,14 +119,9 @@
 
 export default {
   name: 'Login',
-  props: {
-    log: {
-      type: Boolean,
-      default: true
-    }
-  },
   data () {
     return {
+      log: true,
       showPassword: false,
       username: '',
       email: '',
@@ -138,7 +132,6 @@ export default {
   methods: {
     async login () {
       if (this.log) {
-        console.log('0))))))))))))))))))')
         await this.$store.dispatch('user/login', { email: this.email, password: this.password })
       } else {
         await this.$store.dispatch('user/register', {
