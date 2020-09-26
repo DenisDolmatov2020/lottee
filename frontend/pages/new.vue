@@ -83,61 +83,7 @@
                 type="file"
                 class="img-item"
                 accept="image/*"
-                @change="fileChangeOne"
-              >
-            </li>
-            <li>
-              <img
-                v-if="lot.image_two"
-                :src="makeImage(lot.image_two)"
-              >
-              <span
-                v-else
-                class="img-placeholder"
-              >
-                - Image -
-              </span>
-              <input
-                type="file"
-                class="img-item"
-                accept="image/*"
-                @change="fileChangeTwo"
-              >
-            </li>
-            <li>
-              <img
-                v-if="lot.image_three"
-                :src="makeImage(lot.image_three)"
-              >
-              <span
-                v-else
-                class="img-placeholder"
-              >
-                - Image -
-              </span>
-              <input
-                type="file"
-                class="img-item"
-                accept="image/*"
-                @change="fileChangeThree"
-              >
-            </li>
-            <li>
-              <img
-                v-if="lot.image_four"
-                :src="makeImage(lot.image_four)"
-              >
-              <span
-                v-else
-                class="img-placeholder"
-              >
-                - Image -
-              </span>
-              <input
-                type="file"
-                class="img-item"
-                accept="image/*"
-                @change="fileChangeFour"
+                @change="fileChange"
               >
             </li>
           </ul>
@@ -205,12 +151,12 @@
           <v-col cols="12">
             <v-subheader class="pl-0">
               Цена за 1 приз
-              {{ price }}
-              {{ price === 9999 ? '+' : '' }}
-              {{ price === 1000 ? 'и меньше' : '' }}
+              {{ rules.price.value }}
+              {{ rules.price.value === 9999 ? '+' : '' }}
+              {{ rules.price.price === 1000 ? 'и меньше' : '' }}
             </v-subheader>
             <v-slider
-              v-model="price"
+              v-model="rules.price.value"
               thumb-label="always"
               :color="rules.price.color"
               :track-color="rules.price.track_color"
@@ -220,7 +166,7 @@
             >
               <template v-slot:append>
                 <v-text-field
-                  v-model="price"
+                  v-model="rules.price.value"
                   single-line
                   type="number"
                   style="width: 60px"
@@ -229,19 +175,6 @@
                 />
               </template>
             </v-slider>
-            <v-btn
-              text
-              outlined
-              @click="e1=1"
-            >
-              Назад
-            </v-btn>
-            <v-btn
-              color="primary"
-              @click="e1=3"
-            >
-              Дальше
-            </v-btn>
           </v-col>
         </section>
         <section
@@ -290,12 +223,12 @@ export default {
         image_three: null,
         image_four: null
       },
-      sliders: {
+      rules: {
         winners: {
           min: 1,
           max: 10
         },
-        money: {
+        price: {
           value: 1000,
           min: 0,
           max: 9999
@@ -316,17 +249,8 @@ export default {
     makeImage (file) {
       return URL.createObjectURL(file)
     },
-    fileChangeOne (event) {
+    fileChange (event) {
       this.lot.image = event.target.files[0]
-    },
-    fileChangeTwo (event) {
-      this.lot.image_two = event.target.files[0]
-    },
-    fileChangeThree (event) {
-      this.lot.image_three = event.target.files[0]
-    },
-    fileChangeFour (event) {
-      this.lot.image_four = event.target.files[0]
     },
     async addLot (conditions) {
       console.log(JSON.stringify(conditions))

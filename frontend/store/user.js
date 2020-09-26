@@ -50,7 +50,7 @@ export const actions = {
       await dispatch('notification/set_notification', { title: 'Ошибка при регистрации', class: 'error' }, { root: true })
     }
   },
-  async login ({ commit, dispatch, nuxt }, user) {
+  async login ({ commit, dispatch }, user) {
     try {
       const response = await this.$axios({
         url: '/api/my-user/token/',
@@ -129,7 +129,7 @@ export const actions = {
     delete this.$axios.defaults.headers.common.Authorization
     await this.$router.push('/login')
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
-  }
+  },
 }
 
 export const getters = {

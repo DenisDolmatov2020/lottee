@@ -1,7 +1,3 @@
-/* eslint-disable */
-import jwt_decode from 'jwt-decode'
-
-
 export const state = () => ({
   url: '/api/lot/',
   lot: {},
@@ -45,13 +41,13 @@ export const actions = {
       if (response.status === 201) {
         // await commit('SET_FILTER', 'my')
         await this.$router.push({ path: '/' })
-        $nuxt.$emit('snackbar', { color: 'primary', text: 'Лот создан' })
+        dispatch('user/NOTE_SUCCESS', { text: 'Лот создан' }, { root: true })
       } else {
         console.log(JSON.stringify(response))
-        $nuxt.$emit('snackbar', { color: 'error', text: 'Лот не создан' })
+        dispatch('user/NOTE_ERROR', 'Лот не создан', { root: true })
       }
     } catch (error) {
-      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при создании лота' })
+      dispatch('user/NOTE_ERROR', 'Ошибка при создании лота', { root: true })
     }
   },
   async fetchLots ({ state, commit, dispatch }) {
@@ -66,7 +62,7 @@ export const actions = {
       }
     } catch (error) {
       console.log(error)
-      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лотов' })
+      await dispatch('notification/set_notification', { title: 'Ошибка при загрузке лотов', class: 'error' }, { root: true })
     }
   }
 }
@@ -76,4 +72,3 @@ export const getters = {
   lots: s => s.lots,
   filter: s => s.filter
 }
-
