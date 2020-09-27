@@ -17,7 +17,7 @@ def create_number(sender, instance=None, created=False, **kwargs):
 
 
 class Number(models.Model):
-    owner = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='Owner', null=True)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name='Lot')
     num = models.PositiveSmallIntegerField(verbose_name='Number', default=1, blank=True)
     created = models.DateTimeField(verbose_name='Date create', auto_now_add=True, auto_now=False)

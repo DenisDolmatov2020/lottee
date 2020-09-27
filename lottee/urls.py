@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.urls import path
 from number.views import NumberListUpdateView
 from tracker.views import TrackerView
 

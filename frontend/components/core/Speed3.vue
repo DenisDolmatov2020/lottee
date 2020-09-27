@@ -1,20 +1,28 @@
 <template>
   <v-card id="create">
-    <v-btn
-      v-if="!$store.getters['user/isAuthenticated']"
-      color="blue darken-2"
-      fab
-      dark
-      class="btn-no-auth"
-      @click="toLogin"
-    >
-      <v-icon>
-        mdi-account
-      </v-icon>
-    </v-btn>
+    <v-tooltip v-if="!$store.getters['user/isAuthenticated']" left>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          fixed
+          color="blue darken-2"
+          fab
+          dark
+          class="btn-no-auth"
+          v-bind="attrs"
+          v-on="on"
+          @click="toLogin"
+        >
+          <v-icon>
+            mdi-account
+          </v-icon>
+        </v-btn>
+      </template>
+      <span>Вход</span>
+    </v-tooltip>
     <v-speed-dial
       v-else
       v-model="fab"
+      fixed
       top
       right
       direction="bottom"
@@ -27,38 +35,60 @@
           left
           overlap
         >
-          <v-btn
-            v-model="fab"
-            color="blue darken-2"
-            dark
-            fab
-          >
-            <v-icon v-if="fab">
-              mdi-close
-            </v-icon>
-            <v-icon v-else large>
-              mdi-account-circle
-            </v-icon>
-          </v-btn>
+          <v-tooltip left>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-model="fab"
+                color="blue darken-2"
+                dark
+                fab
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon v-if="fab">
+                  mdi-close
+                </v-icon>
+                <v-icon v-else large>
+                  mdi-account-circle
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Профиль</span>
+          </v-tooltip>
         </v-badge>
       </template>
-      <v-btn
-        fab
-        dark
-        small
-        color="green"
-        @click="drawer('Profile')"
-      >
-        <v-icon>mdi-cog</v-icon>
-      </v-btn>
-      <v-btn
-        fab
-        dark
-        small
-        color="gray"
-      >
-        <v-icon>mdi-bell-outline</v-icon>
-      </v-btn>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="green"
+            v-bind="attrs"
+            v-on="on"
+            @click="drawer('Profile')"
+          >
+            <v-icon>mdi-cog</v-icon>
+          </v-btn>
+        </template>
+        <span>Настройки</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="gray"
+            v-bind="attrs"
+            v-on="on"
+            @click="drawer('Notifications')"
+          >
+            <v-icon>mdi-bell-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Уведоления</span>
+      </v-tooltip>
       <v-btn
         fab
         dark
@@ -67,15 +97,22 @@
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
-      <v-btn
-        fab
-        dark
-        small
-        color="red"
-        @click="toLogout"
-      >
-        <v-icon>mdi-door</v-icon>
-      </v-btn>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="red"
+            v-bind="attrs"
+            v-on="on"
+            @click="toLogout"
+          >
+            <v-icon>mdi-door</v-icon>
+          </v-btn>
+        </template>
+        <span>Выйти</span>
+      </v-tooltip>
     </v-speed-dial>
   </v-card>
 </template>

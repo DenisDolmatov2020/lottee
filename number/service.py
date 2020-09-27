@@ -1,9 +1,5 @@
-import datetime
 import requests
-import pytz
 from rest_framework.utils import json
-
-from lot.models import Lot
 from number.models import Number
 
 

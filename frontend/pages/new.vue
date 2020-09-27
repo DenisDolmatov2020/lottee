@@ -95,10 +95,10 @@
           <v-col cols="12">
             <v-subheader class="pl-0">
               Количество участников
-              {{ lot.limit_players }}
+              {{ lot.players }}
             </v-subheader>
             <v-slider
-              v-model="lot.limit_players"
+              v-model="lot.players"
               dense
               thumb-label
               :min="rules.players.min"
@@ -106,7 +106,7 @@
             >
               <template v-slot:append>
                 <v-text-field
-                  v-model="lot.limit_players"
+                  v-model="lot.players"
                   class="mt-0 pt-0"
                   hide-details
                   single-line

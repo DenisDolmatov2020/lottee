@@ -54,6 +54,21 @@ export const actions = {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при создании лота' })
     }
   },
+  async lotDetail ({ state, commit }, lot) {
+    try {
+      const response = await this.$axios({
+        url: `${state.url}/${lot.id}`,
+        headers: { Authorization: '' },
+        method: 'GET'
+      })
+      if (response.status === 200) {
+        commit('SET_LOT', response.data)
+      }
+    } catch (error) {
+      console.log(error)
+      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })
+    }
+  },
   async fetchLots ({ state, commit, dispatch }) {
     try {
       const response = await this.$axios({
