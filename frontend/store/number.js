@@ -1,5 +1,4 @@
 /* eslint-disable */
-import jwt_decode from 'jwt-decode'
 
 
 export const state = () => ({
@@ -25,18 +24,17 @@ export const mutations = {
 export const actions = {
   async reserve({ rootState, commit }) {
     try {
-      console.log(1)
-      console.log(rootState['lot'].lot.id)
-      const response = await this.$axios.$post(`/api/number/${rootState['lot'].lot.id}/`)
-      console.log(3)
-      console.log(JSON.stringify(response))
+      const response = await this.$axios({
+        url: '/api/number/',
+        method: 'PATCH',
+        data: { lot_id: rootState['lot'].lot.id }
+      })
       if (response.status === 200) {
         $nuxt.$emit('snackbar', { color: 'primary', text: `Ваш номер ${response.data.num}` })
       } else {
-        console.log(JSON.stringify(response))
         $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
       }
-      console.log(2)
+      await this.$auth.fetchUser()
     } catch (error) {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка' })
     }

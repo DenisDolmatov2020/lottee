@@ -33,14 +33,10 @@
       </v-carousel-item>
     </v-carousel>
     <v-card-title>
-      <v-row>
-        <v-col>
-          {{ lot.title }}
-        </v-col>
+      <v-row class="pl-4">
+        {{ lot.title }}
         <v-spacer />
-        <v-col>
-          <icons :lot="lot" />
-        </v-col>
+        <icons :lot="lot" />
       </v-row>
     </v-card-title>
 
@@ -86,7 +82,9 @@
     <v-card-title>
       {{ lot.active ? 'Условия участия' : 'Победители' }}
       <v-spacer />
-      <v-icon large> mdi-comment-question </v-icon>
+      <v-icon large>
+        mdi-comment-question
+      </v-icon>
     </v-card-title>
 
     <v-card-text>
@@ -126,17 +124,22 @@
         Закрыть
       </v-btn>
       <v-spacer />
+      <span v-if="$auth.user.numbers[lot.id]" class="red--text text--lighten-1">
+        Номер #{{ $auth.user.numbers[lot.id] }}
+      </span>
+      <span v-else-if="lot.user.id === $auth.user.id" class="px-2 py-1 red lighten-1 rounded-sm">
+        Ваш лот
+      </span>
+      <span v-else-if="lot.active" class="success--text ">
+        Лот завершен
+      </span>
       <v-btn
-        v-if="lot.active"
+        v-else
         color="primary"
-        text
         @click="reserve"
       >
         Резерв
       </v-btn>
-      <span v-else class="success--text">
-        Лот завершен
-      </span>
     </v-card-actions>
   </v-card>
 </template>

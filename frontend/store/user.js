@@ -1,70 +1,24 @@
 /* eslint-disable */
-import jwt_decode from 'jwt-decode'
 
-
-export const state = () => ({
-  token: '',
-  user: {},
-  numbers: []
-})
-
-export const mutations = {
-  SET_TOKEN (state, payload) {
-    // state.userId = payload.userId
-    state.token = payload.token
-  },
-  SET_USER_PROFILE (state, payload) {
-    state.user = payload.user
-    state.numbers = payload.numbers
-  },
-  SET_NUMBERS (state, numbers)   {
-    state.numbers = numbers
-  },
-  SET_NUMBER (state, payload) {
-    state.numbers[payload.lot] = payload.num
-  },
-  SET_ENERGY (state, energy) {
-    state.user.energy = energy
-  },
-  ADD_ENERGY (state, energy) {
-    state.user.energy += energy
-  },
-  LOGOUT (state) {
-    state.token = ''
-    state.user = {}
-    state.numbers = []
-  }
-}
 export const actions = {
   async register ({ dispatch }, user) {
     try {
       const response = await this.$axios({
         url: '/api/my-user/create/',
         data: user,
-        method: 'POST',
+        method: 'POST'
       })
-      await console.log(response.status)
       if (response.status === 201) await dispatch('login', user)
-      else await dispatch('notification/set_notification', { title: 'E-mail уже используется', class: '' }, { root: true })
+      else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
     } catch (error) {
-      await dispatch('notification/set_notification', { title: 'Ошибка при регистрации', class: 'error' }, { root: true })
+      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при регистрации' })
     }
   },
   async login ({ commit, dispatch }, user) {
     try {
-      const response = await this.$axios({
-        url: '/api/my-user/token/',
-        data: user,
-        method: 'POST'
+      await this.$auth.loginWith('local', {
+        data: user
       })
-      this.$axios.defaults.headers.common.Authorization = `JWT ${response.data.access}`
-      localStorage.token = await response.data.refresh
-      localStorage.acceess = await response.data.access
-      console.log(response.data.access)
-      const decoder = jwt_decode(response.data.access)
-      console.log(JSON.stringify(decoder))
-      await commit('SET_TOKEN', { token: await response.data.refresh })
-      await commit('SET_USER_PROFILE', { user: decoder.user_profile })
       $nuxt.$emit('snackbar', { color: 'success', text: 'ВХОД ВЫПОЛНЕН' })
       await this.$router.push('/')
     } catch (error) {
@@ -75,35 +29,31 @@ export const actions = {
       $nuxt.$emit('snackbar', { color: 'error', text })
     }
   },
-  async update ({ state, commit, dispatch }, payload) {
+  async update ({ state, dispatch }, user) {
     const formData = new FormData()
-    if (payload.name) {
-      await formData.append('name', payload.name)
-    }
-    if (payload.image) {
-      await formData.append('image', payload.image)
-    }
+    const keys = Object.keys(user)
+    keys.forEach(key => {
+      if (key !== 'image' || key === 'image' && typeof user[key] === 'object')
+      formData.append(key, user[key])
+    });
     try {
       const response = await this.$axios.patch(
-        '/api/my-user/profile/', formData,
+        '/api/my-user/', formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         })
-      await console.log('Success: ' + JSON.stringify(response.data))
+      console.log('Success: ' + JSON.stringify(response.data))
       if (response.status === 200) {
-        await commit('SET_USER', response.data)
-        $nuxt.$emit('snackbar', { color: 'success', text: 'Изменения пользователя сохранены' })
+        $nuxt.$emit('snackbar', { color: 'success', text: 'Изменения профиля сохранены' })
+        await this.$auth.fetchUser()
       }
+      console.log('STATUS: ' + JSON.stringify(response.status))
     } catch (error) {
-      // eslint-disable-next-line no-console
+      console.log('STATUS in error: ' + JSON.stringify(error.response.status))
       console.log('Error: ', error)
-      // await dispatch('error/errorActions', { error: error }, { root: true } )
-      let text = 'Ошибка при сохранении'
-      console.log(text)
-      // await dispatch('notification/set_notification', { title: text, class: '' }, { root: true })
-      // $nuxt.$emit('open-snack', { snackbar: true, background_color: 'error', text, timeout: 1500 })
+      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при обновлении профиля' })
     }
   },
   async profile ({ commit }) {
@@ -122,11 +72,8 @@ export const actions = {
       console.log('auth_error_login_action', error)
     }
   },
-  async logout ({ commit, dispatch }) {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    await commit('LOGOUT')
-    delete this.$axios.defaults.headers.common.Authorization
+  async logout () {
+    await this.$auth.logout()
     await this.$router.push('/login')
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
   },

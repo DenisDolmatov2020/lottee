@@ -43,6 +43,8 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
     name = models.CharField(verbose_name='name', max_length=255)
+    phone = models.CharField(max_length=32, null=True)
+    address = models.CharField(max_length=200, null=True)
     image = models.ImageField(verbose_name='Аватар', upload_to='user/', blank=True, null=True)
 
     locale = models.CharField(verbose_name='Локация', max_length=16, default='ru')

@@ -1,5 +1,4 @@
 /* eslint-disable */
-import jwt_decode from 'jwt-decode'
 
 
 export const state = () => ({

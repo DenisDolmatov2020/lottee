@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: 'Notifications',
+  name: 'Wins',
   data () {
     return {
       alert: true

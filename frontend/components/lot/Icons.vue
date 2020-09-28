@@ -1,7 +1,8 @@
 <template>
   <v-row
+    align="center"
     justify="end"
-    class="mr-2"
+    class="mr-4"
   >
     <v-icon class="mr-1" color="pink">
       mdi-gift-outline

@@ -1,6 +1,6 @@
 <template>
   <v-card id="create">
-    <v-tooltip v-if="!$store.getters['user/isAuthenticated']" left>
+    <v-tooltip v-if="!$auth.loggedIn" left fixed>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           fixed
@@ -29,33 +29,29 @@
       slide-x-reverse-transition
     >
       <template v-slot:activator>
-        <v-badge
-          color="indigo"
-          :content="String(user.energy)"
-          left
-          overlap
-        >
-          <v-tooltip left>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-model="fab"
-                color="blue darken-2"
-                dark
-                fab
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon v-if="fab">
-                  mdi-close
-                </v-icon>
-                <v-icon v-else large>
-                  mdi-account-circle
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>Профиль</span>
-          </v-tooltip>
-        </v-badge>
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-model="fab"
+              color="blue darken-2"
+              dark
+              fab
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon v-if="fab">
+                mdi-close
+              </v-icon>
+              <v-avatar v-else-if="$auth.user.image">
+                <v-img :src="$auth.user.image" />
+              </v-avatar>
+              <v-icon v-else large>
+                mdi-account-circle
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>Профиль</span>
+        </v-tooltip>
       </template>
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
@@ -73,30 +69,51 @@
         </template>
         <span>Настройки</span>
       </v-tooltip>
-      <v-tooltip left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            dark
-            small
-            color="gray"
-            v-bind="attrs"
-            v-on="on"
-            @click="drawer('Notifications')"
-          >
-            <v-icon>mdi-bell-outline</v-icon>
-          </v-btn>
-        </template>
-        <span>Уведоления</span>
-      </v-tooltip>
-      <v-btn
-        fab
-        dark
-        small
+
+      <v-badge
+        v-if="$auth.user.wins"
+        color="pink lighten-1"
+        :content="String($auth.user.wins)"
+        bordered
+        inline
+        left
+        tile
+        overlap
+      >
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              fab
+              dark
+              small
+              color="pink"
+              v-bind="attrs"
+              v-on="on"
+              @click="drawer('Wins')"
+            >
+              <v-icon>mdi-gift</v-icon>
+            </v-btn>
+          </template>
+          <span>Выигранные призы</span>
+        </v-tooltip>
+      </v-badge>
+
+      <v-badge
+        inline
+        tile
+        :content="String($auth.user.energy)"
         color="indigo"
       >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
+        <v-btn
+          fab
+          dark
+          small
+          color="indigo"
+        >
+          <v-icon>mdi-flash</v-icon>
+        </v-btn>
+      </v-badge>
+
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -106,7 +123,7 @@
             color="red"
             v-bind="attrs"
             v-on="on"
-            @click="toLogout"
+            @click="logout"
           >
             <v-icon>mdi-door</v-icon>
           </v-btn>
@@ -117,24 +134,20 @@
   </v-card>
 </template>
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   data: () => ({
     direction: 'top',
     fab: false
   }),
-
-  computed: {
-    user () {
-      return this.$store.getters['user/user']
-    }
-  },
   methods: {
     toLogin () {
       this.$router.push('/login')
     },
-    toLogout () {
-      this.$store.dispatch('user/logout')
-    },
+    ...mapActions('user', [
+      'logout'
+    ]),
     drawer (component) {
       console.log('DRAWER EMIT')
       this.$nuxt.$emit('drawer', component)

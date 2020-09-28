@@ -13,12 +13,12 @@
 
 <script>
 import Profile from '@/components/user/Profile'
-import Notifications from '@/components/user/Notifications'
+import Wins from '@/components/user/Wins'
 import Card from '@/components/lot/detail/Card'
 
 export default {
   name: 'Drawer',
-  components: { Profile, Notifications, Card },
+  components: { Profile, Wins, Card },
   data () {
     return {
       component: 'Profile',

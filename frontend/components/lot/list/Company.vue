@@ -2,7 +2,7 @@
   <v-card
     v-if="company"
     class="v-sheet--offset mx-auto"
-    :color="company.color || 'blue'"
+    :color="company.id === $auth.user.id ? 'red lighten-1':'blue darken-1'"
     elevation="12"
     width="calc(100% - 32px)"
     height="80px"
@@ -32,7 +32,7 @@
     />
     <v-row>
       <span :class="`ml-4 white--text`">
-        {{ company.name }}
+        {{ $auth.user.id === company.id ? 'Ваш лот' : company.name }}
       </span>
     </v-row>
     <v-list-item

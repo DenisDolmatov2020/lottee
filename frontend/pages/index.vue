@@ -6,57 +6,20 @@
       lg="4"
       md="6"
       cols="12"
+      offset-md="1"
     >
-      <v-hover>
-        <template #default="{ hover }">
-          <v-card
-            class="my-12 mx-auto"
-            width="400"
-            :elevation="hover ? 24 : 3"
-            @click="lotDetail(lot)"
-          >
-            <Company :company="lot.user" />
-            <v-card-text class="pt-0">
-              <div class="d-flex flex-no-wrap justify-space-between">
-                <div class="title font-weight-light mb-2">
-                  <v-card-title
-                    class="headline"
-                    v-text="lot.title"
-                  />
-
-                  <v-card-subtitle
-                    class="subheading font-weight-light grey--text"
-                    v-text="lot.description"
-                  />
-                </div>
-
-                <v-avatar
-                  class="ma-3"
-                  size="80"
-                  tile
-                  color="grey lighten-1"
-                >
-                  <v-img v-if="lot.image" :src="lot.image" />
-                  <v-icon v-else>
-                    mdi-camera
-                  </v-icon>
-                </v-avatar>
-              </div>
-              <v-divider class="my-2" />
-              <icons :lot="lot" />
-            </v-card-text>
-          </v-card>
-        </template>
-      </v-hover>
+      <Card :lot="lot" />
     </v-col>
   </v-row>
 </template>
 
 <script>
 // import { mapGetters } from 'vuex'
+import Card from '@/components/lot/list/Card'
 
 export default {
   name: 'Lot',
+  components: { Card },
   async fetch ({ store }) {
     await store.dispatch('lot/fetchLots')
   },

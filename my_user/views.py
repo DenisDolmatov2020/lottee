@@ -1,3 +1,4 @@
+from django.db import connection
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -6,13 +7,8 @@ from rest_framework.generics import get_object_or_404, CreateAPIView, RetrieveUp
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from rest_framework_simplejwt.views import TokenObtainPairView
-from my_user.serializers import UserSerializer, MyTokenObtainPairSerializer
-
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+from my_user.serializers import UserSerializer
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser, FileUploadParser
 
 
 class UserCreateView(CreateAPIView):
@@ -35,14 +31,18 @@ class UserRetrieveUpdateView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = get_user_model()
     serializer_class = UserSerializer
+    # parser_classes = (MultiPartParser,)
 
     def retrieve(self, request, *args, **kwargs):
         serializer = self.get_serializer(request.user)
-        user_numbers = Number.objects.only('lot_id', 'num').filter(owner=request.user)
-        numbers_dict = {number.lot_id: number.num for number in user_numbers}
+        user_numbers = Number.objects.only('lot_id', 'num').filter(user=request.user)
+        data_ = serializer.data
+        data_['numbers'] = {number.lot_id: number.num for number in user_numbers}
+        data_['wins'] = len(user_numbers.filter(won=True))
+        print('Total requests count: %s' % len(connection.queries))
         return Response(
             status=status.HTTP_200_OK,
-            data={'user': serializer.data, 'numbers': numbers_dict}
+            data={'user': data_}
         )
 
     def partial_update(self, request, *args, **kwargs):
