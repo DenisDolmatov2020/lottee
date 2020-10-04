@@ -1,8 +1,8 @@
 <template>
   <v-card
-    v-if="company"
+    v-if="$auth.loggedIn && company"
     class="v-sheet--offset mx-auto"
-    :color="company.id === $auth.user.id ? 'red lighten-1':'blue darken-1'"
+    :color="company.id === $auth.user.id ? 'blue darken-2' : 'green'"
     elevation="12"
     width="calc(100% - 32px)"
     height="80px"

@@ -15,16 +15,12 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>
-        <span class="headline">Профиль</span>
-      </v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
             <v-file-input
               v-model="user.image"
               label="Аватар"
-              filled
               prepend-icon="mdi-camera"
             />
             <v-col
@@ -103,7 +99,7 @@ export default {
   },
   created () {
     this.user = {
-      image: {},
+      image: null,
       name: this.$auth.user.name,
       email: this.$auth.user.email,
       phone: this.$auth.user.phone,

@@ -53,10 +53,10 @@ export const actions = {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при создании лота' })
     }
   },
-  async lotDetail ({ state, commit }, lot) {
+  async lotDetail ({ state, commit }, lot_id) {
     try {
       const response = await this.$axios({
-        url: `${state.url}/${lot.id}`,
+        url: `${state.url}/${lot_id}`,
         headers: { Authorization: '' },
         method: 'GET'
       })
@@ -67,6 +67,7 @@ export const actions = {
       console.log(error)
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })
     }
+    $nuxt.$emit('drawer', 'Card')
   },
   async fetchLots ({ state, commit, dispatch }) {
     try {

@@ -73,7 +73,7 @@
       <v-badge
         v-if="$auth.user.wins"
         color="pink lighten-1"
-        :content="String($auth.user.wins)"
+        :content="String($auth.user.wins.length)"
         bordered
         inline
         left

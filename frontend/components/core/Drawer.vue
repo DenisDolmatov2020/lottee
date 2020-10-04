@@ -7,6 +7,22 @@
     width="480"
     floating
   >
+    <v-card
+      color="grey lighten-4"
+      flat
+      tile
+    >
+      <v-toolbar dense :color="components[component].color" :dark="components[component].dark">
+        <v-btn icon @click="drawer = false">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+
+        <v-toolbar-title>{{ components[component].title }}</v-toolbar-title>
+
+        <v-spacer />
+        <Modal v-if="component === 'Profile'" />
+      </v-toolbar>
+    </v-card>
     <component :is="component" />
   </v-navigation-drawer>
 </template>
@@ -21,6 +37,11 @@ export default {
   components: { Profile, Wins, Card },
   data () {
     return {
+      components: {
+        Profile: { title: 'Профиль', color: 'blue', dark: true },
+        Wins: { title: 'Подарки', color: 'pink', dark: true },
+        Card: { title: 'Лот', color: 'white', dark: false }
+      },
       component: 'Profile',
       drawer: false
     }

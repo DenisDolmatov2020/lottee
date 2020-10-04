@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    :loading="loading"
-    class="mx-auto"
-  >
+  <div>
     <v-carousel
       cycle
       height="250"
@@ -16,20 +13,7 @@
         <v-img
           height="250"
           :src="slide"
-        >
-          <v-card-title>
-            <v-btn x-large dark icon @click="$nuxt.$emit('drawer-close')">
-              <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
-            <v-spacer />
-            <v-btn dark icon class="mr-4">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn dark icon>
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </v-card-title>
-        </v-img>
+        />
       </v-carousel-item>
     </v-carousel>
     <v-card-title>
@@ -40,51 +24,36 @@
       </v-row>
     </v-card-title>
 
-    <v-card-text v-if="lot.user">
-      <v-row
-        align="center"
-        class="mx-0"
-      >
-        <v-rating
-          :value="4.5"
-          color="amber"
-          dense
-          half-increments
-          readonly
-          size="14"
-        />
-
-        <div class="grey--text ml-4">
-          4.5 (413)
-        </div>
-      </v-row>
-
-      <div class="my-4 subtitle-1">
-        <v-list-item-avatar
-          color="grey lighten-2"
-          class="ml-2 mt-1"
-        >
-          <v-img
-            v-if="lot.user.image"
-            :src="lot.user.image"
-          />
-          <v-icon v-else>
-            mdi-camera
-          </v-icon>
-        </v-list-item-avatar>
-        {{ lot.user.name }}
-      </div>
-      <div>{{ lot.description }}</div>
+    <v-card-text>
+      {{ lot.description }}
     </v-card-text>
+    <Company v-if="lot.user" :company="lot.user" />
 
     <v-divider class="mx-4" />
 
     <v-card-title>
       {{ lot.active ? 'Условия участия' : 'Победители' }}
       <v-spacer />
-      <v-icon large>
-        mdi-comment-question
-      </v-icon>
+      <v-menu transition="slide-x-reverse-transition">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="secondary"
+            text
+            dark
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon large color="gray">
+              mdi-comment-question
+            </v-icon>
+          </v-btn>
+        </template>
+        <v-sheet color="warning" class="white-text">
+          Выполнив условия, можно принять участие в <br>
+          розыгрыше если условия будут выполнены после участия, <br>
+          в случае победы результат аннулируется.
+        </v-sheet>
+      </v-menu>
     </v-card-title>
 
     <v-card-text>
@@ -112,6 +81,70 @@
           </v-chip>
         </a>
       </v-row>
+      <v-row
+        v-for="winner in lot.wins"
+        :key="`winner_${winner.id}`"
+        active-class="deep-purple accent-4 white--text"
+        column
+      >
+        <v-row class="mx-5">
+          <v-menu
+            bottom
+            min-width="200px"
+            rounded
+            offset-y
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn
+                icon
+                x-large
+                v-on="on"
+              >
+                <v-avatar
+                  color="green"
+                  size="48"
+                >
+                  <img v-if="!winner.user.image" :src="winner.user.image">
+                  <v-icon v-else color="white">
+                    mdi-account-outline
+                  </v-icon>
+                </v-avatar>
+              </v-btn>
+            </template>
+            <v-card>
+              <v-list-item-content class="justify-center">
+                <div class="mx-auto text-center">
+                  <v-avatar
+                    color="brown"
+                  >
+                    <span class="white--text headline">BB</span>
+                  </v-avatar>
+                  <h3>{{ winner.user.name }}</h3>
+                  <p class="caption mt-1">
+                    {{ winner.user.email }}
+                  </p>
+                  <v-divider class="my-3" />
+                  <v-btn
+                    depressed
+                    rounded
+                    text
+                  >
+                    Edit Account
+                  </v-btn>
+                  <v-divider class="my-3" />
+                  <v-btn
+                    depressed
+                    rounded
+                    text
+                  >
+                    Disconnect
+                  </v-btn>
+                </div>
+              </v-list-item-content>
+            </v-card>
+          </v-menu>
+        </v-row>
+      </v-row>
     </v-card-text>
 
     <v-divider class="mx-4" />
@@ -130,7 +163,7 @@
       <span v-else-if="lot.user.id === $auth.user.id" class="px-2 py-1 red lighten-1 rounded-sm">
         Ваш лот
       </span>
-      <span v-else-if="lot.active" class="success--text ">
+      <span v-else-if="!lot.active" class="success--text">
         Лот завершен
       </span>
       <v-btn
@@ -141,7 +174,7 @@
         Резерв
       </v-btn>
     </v-card-actions>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -150,6 +183,7 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'Card',
   data: () => ({
+    show: false,
     loading: false,
     colors: [
       'indigo',

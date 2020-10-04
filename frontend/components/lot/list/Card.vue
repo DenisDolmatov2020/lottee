@@ -5,7 +5,7 @@
         class="my-12 mx-auto"
         width="400"
         :elevation="hover ? 24 : 3"
-        @click="lotDetail(lot)"
+        @click="lotDetail(lot.id)"
       >
         <Company :company="lot.user" />
         <v-card-text class="pt-0">
@@ -34,11 +34,11 @@
               </v-icon>
             </v-avatar>
           </div>
-          <v-divider :class="['my-2', $auth.user.numbers[lot.id] ? 'red lighten-1' : '']" />
-          <v-row>
+          <v-divider :class="['my-2', $auth.loggedIn && $auth.user.numbers[lot.id] ? 'blue' : '']" />
+          <v-row v-if="$auth.loggedIn">
             <span
-              v-if="$auth.user.numbers[lot.id]"
-              class="text-h6 ml-4 red--text text--lighten-1"
+              v-if="$auth.user && $auth.user.numbers[lot.id]"
+              class="text-h6 ml-4 blue--text text--lighten-1"
             >
               {{ `#${$auth.user.numbers[lot.id]}` }}
             </span>
@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Card',
   props: {
@@ -60,12 +62,9 @@ export default {
     }
   },
   methods: {
-    async lotDetail (lot) {
-      await this.$store.dispatch('lot/lotDetail', lot)
-      this.$nuxt.$emit('drawer', 'Card')
-      // await this.$store.commit('lot/SET_LOT', lot)
-      // await this.$nuxt.$emit('drawer', 'Detail')
-    }
+    ...mapActions('lot', [
+      'lotDetail'
+    ])
   }
 }
 </script>

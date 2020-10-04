@@ -33,8 +33,12 @@ export const actions = {
     const formData = new FormData()
     const keys = Object.keys(user)
     keys.forEach(key => {
-      if (key !== 'image' || key === 'image' && typeof user[key] === 'object')
-      formData.append(key, user[key])
+      if (user[key] &&  (key !== 'image' || key === 'image' && typeof user[key] === 'object')) {
+        formData.append(key, user[key])
+        console.log(key + ':' + JSON.stringify(user[key]))
+        console.log(typeof user[key])
+      }
+
     });
     try {
       const response = await this.$axios.patch(
@@ -73,8 +77,8 @@ export const actions = {
     }
   },
   async logout () {
-    await this.$auth.logout()
     await this.$router.push('/login')
+    await this.$auth.logout()
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
   },
 }

@@ -6,7 +6,7 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
         <v-spacer />
-        Уведомления
+        Мои подарки
         <v-spacer />
         <v-btn dark icon class="mr-4">
           <v-icon>mdi-pencil</v-icon>
@@ -16,17 +16,27 @@
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </v-card-title>
+
       <v-alert
+        v-for="win in $auth.user.wins"
+        :key="win.id"
         class="ma-4"
-        color="error"
+        color="pink"
         dark
-        icon="mdi-vuetify"
+        icon="mdi-gift"
         prominent
         border="left"
-        close-text="Close Alert"
-        dismissible
       >
-        Praesent congue erat at massa. Nullam vel sem.
+        <v-row align="center">
+          <v-col class="grow">
+            Выигрышный номер #{{ win.num }} {{ $auth.user.wins }}
+          </v-col>
+          <v-col class="shrink">
+            <v-btn text @click="$store.dispatch('lot/lotDetail', win.lot)">
+              Перейти
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-alert>
     </v-card>
   </div>

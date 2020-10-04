@@ -10,6 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from my_user.serializers import UserSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser, FileUploadParser
 
+from number.serializers import NumberSerializer
+
 
 class UserCreateView(CreateAPIView):
     permission_classes = [AllowAny]
@@ -35,10 +37,13 @@ class UserRetrieveUpdateView(RetrieveUpdateAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         serializer = self.get_serializer(request.user)
-        user_numbers = Number.objects.only('lot_id', 'num').filter(user=request.user)
+        user_numbers = Number.objects.filter(user=request.user)
         data_ = serializer.data
         data_['numbers'] = {number.lot_id: number.num for number in user_numbers}
-        data_['wins'] = len(user_numbers.filter(won=True))
+        # user wins
+        wins = NumberSerializer(user_numbers.filter(won=True), many=True)
+        print(wins.data)
+        data_['wins'] = wins.data
         print('Total requests count: %s' % len(connection.queries))
         return Response(
             status=status.HTTP_200_OK,

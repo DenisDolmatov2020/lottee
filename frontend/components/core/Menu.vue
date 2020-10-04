@@ -31,12 +31,6 @@
     <ul class="c-circle-nav__items">
       <li
         class="c-circle-nav__item btn-entry"
-        @click="$router.push('new')"
-      >
-        Все
-      </li>
-      <li
-        class="c-circle-nav__item btn-entry"
         @click="pushToLots('active')"
       >
         Активные
@@ -52,12 +46,6 @@
         @click="pushToLots('my')"
       >
         Мои
-      </li>
-      <li
-        class="c-circle-nav__item btn-entry"
-        @click="pushToCreateLot"
-      >
-        Создать
       </li>
     </ul>
   </nav>
@@ -84,10 +72,6 @@ export default {
     pushToLots (f) {
       this.$store.commit('lot/SET_FILTER', f)
       this.$router.push('/')
-      this.is_active = false
-    },
-    pushToCreateLot () {
-      this.$router.push('/new')
       this.is_active = false
     }
   }
@@ -196,6 +180,7 @@ $NUM_LAYERS: 20;
 }
 
 .c-circle-nav__item {
+  color: white;
   display: block;
   cursor: pointer;
   width: 100px;
@@ -219,6 +204,7 @@ $NUM_LAYERS: 20;
 * Transisition delays at the default state.
 */
 
+/*
 .c-circle-nav__item:nth-child(1) {
   -webkit-transition-delay: 0.4s;
   transition-delay: 0.4s;
@@ -228,18 +214,18 @@ $NUM_LAYERS: 20;
   -webkit-transition-delay: 0.3s;
   transition-delay: 0.3s;
 }
-
-.c-circle-nav__item:nth-child(3) {
+*/
+.c-circle-nav__item:nth-child(1) {
   -webkit-transition-delay: 0.2s;
   transition-delay: 0.2s;
 }
 
-.c-circle-nav__item:nth-child(4) {
+.c-circle-nav__item:nth-child(2) {
   -webkit-transition-delay: 0.1s;
   transition-delay: 0.1s;
 }
 
-.c-circle-nav__item:nth-child(5) {
+.c-circle-nav__item:nth-child(3) {
   -webkit-transition-delay: 0s;
   transition-delay: 0s;
 }
@@ -271,7 +257,7 @@ $NUM_LAYERS: 20;
     transform: translate(288px, 0);
   }
 }
-
+/*
 .c-circle-nav.is-active .c-circle-nav__item:nth-child(2) {
   -webkit-transition-delay: 0.1s;
   transition-delay: 0.1s;
@@ -287,8 +273,8 @@ $NUM_LAYERS: 20;
     transform: translate(267px, 111px);
   }
 }
-
-.c-circle-nav.is-active .c-circle-nav__item:nth-child(3) {
+*/
+.c-circle-nav.is-active .c-circle-nav__item:nth-child(2) {
   -webkit-transition-delay: 0.2s;
   transition-delay: 0.2s;
   -webkit-transform: translate(115px, 95px);
@@ -297,14 +283,14 @@ $NUM_LAYERS: 20;
 }
 
 @media (min-width: 480px) and (min-height: 480px) {
-  .c-circle-nav.is-active .c-circle-nav__item:nth-child(3) {
+  .c-circle-nav.is-active .c-circle-nav__item:nth-child(2) {
     -webkit-transform: translate(204px, 204px);
     -ms-transform: translate(204px, 204px);
     transform: translate(204px, 204px);
   }
 }
-
-.c-circle-nav.is-active .c-circle-nav__item:nth-child(4) {
+/*
+.c-circle-nav.is-active .c-circle-nav__item:nth-child(3) {
   -webkit-transition-delay: 0.3s;
   transition-delay: 0.3s;
   -webkit-transform: translate(92px, 143px);
@@ -313,14 +299,14 @@ $NUM_LAYERS: 20;
 }
 
 @media (min-width: 480px) and (min-height: 480px) {
-  .c-circle-nav.is-active .c-circle-nav__item:nth-child(4) {
+  .c-circle-nav.is-active .c-circle-nav__item:nth-child(3) {
     -webkit-transform: translate(111px, 267px);
     -ms-transform: translate(111px, 267px);
     transform: translate(111px, 267px);
   }
 }
-
-.c-circle-nav.is-active .c-circle-nav__item:nth-child(5) {
+*/
+.c-circle-nav.is-active .c-circle-nav__item:nth-child(3) {
   -webkit-transition-delay: 1s;
   transition-delay: 1s;
   -webkit-transform: translate(0, 186px);
@@ -329,7 +315,7 @@ $NUM_LAYERS: 20;
 }
 
 @media (min-width: 480px) and (min-height: 480px) {
-  .c-circle-nav.is-active .c-circle-nav__item:nth-child(5) {
+  .c-circle-nav.is-active .c-circle-nav__item:nth-child(3) {
     -webkit-transform: translate(0, 288px);
     -ms-transform: translate(0, 288px);
     transform: translate(0, 288px);

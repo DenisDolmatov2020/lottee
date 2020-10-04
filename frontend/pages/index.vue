@@ -37,12 +37,14 @@ export default {
       let lots = this.$store.getters['lot/lots']
       if (this.$store.getters['lot/filter'] === 'active') {
         lots = lots.filter(lot => lot.active === true)
-      } else if (this.$store.getters['lot/filter'] === 'have') {
-        lots = lots.filter(lot => this.numbers[lot.id])
       } else if (this.$store.getters['lot/filter'] === 'my') {
-        lots = lots.filter(lot => lot.user.id === this.$store.getters['user/user'].id)
+        lots = lots.filter(lot => lot.user.id === this.$auth.user.id)
       }
       return lots
+      /*
+      else if (this.$store.getters['lot/filter'] === 'have') {
+        lots = lots.filter(lot => this.numbers[lot.id])
+      } */
     }
   },
   methods: {
