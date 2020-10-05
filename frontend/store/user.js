@@ -20,7 +20,7 @@ export const actions = {
         data: user
       })
       $nuxt.$emit('snackbar', { color: 'success', text: 'ВХОД ВЫПОЛНЕН' })
-      await this.$router.push('/')
+      await $nuxt.$emit('drawer-close')
     } catch (error) {
       let text = 'Ошибка при входе'
       if (error.response && error.response.status === 401) {
@@ -33,13 +33,13 @@ export const actions = {
     const formData = new FormData()
     const keys = Object.keys(user)
     keys.forEach(key => {
-      if (user[key] &&  (key !== 'image' || key === 'image' && typeof user[key] === 'object')) {
+      if (key !== 'image' || key === 'image' && user[key] && typeof user[key] === 'object') {
         formData.append(key, user[key])
         console.log(key + ':' + JSON.stringify(user[key]))
         console.log(typeof user[key])
       }
-
     });
+    formData.getAll('image');
     try {
       const response = await this.$axios.patch(
         '/api/my-user/', formData,
@@ -56,6 +56,7 @@ export const actions = {
       console.log('STATUS: ' + JSON.stringify(response.status))
     } catch (error) {
       console.log('STATUS in error: ' + JSON.stringify(error.response.status))
+      console.log('STATUS in error response: ' + JSON.stringify(error.response))
       console.log('Error: ', error)
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при обновлении профиля' })
     }
@@ -77,14 +78,7 @@ export const actions = {
     }
   },
   async logout () {
-    await this.$router.push('/login')
     await this.$auth.logout()
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
   },
-}
-
-export const getters = {
-  user: s => s.user,
-  numbers: s => s.numbers,
-  isAuthenticated: s => !!s.token
 }

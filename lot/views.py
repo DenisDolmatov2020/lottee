@@ -20,7 +20,7 @@ class LotViewSet(ViewSet):
     serializer = LotSerializer
 
     def list(self, request, *args):
-        serializer = self.serializer(Lot.objects.filter(active=True), many=True)
+        serializer = self.serializer(Lot.objects.all(), many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None, *args):

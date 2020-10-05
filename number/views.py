@@ -22,15 +22,15 @@ class NumberListUpdateView(UpdateAPIView):
         print(numbers)
         lot_user_numbers = numbers.filter(user_id=request.user.id)
         if not len(lot_user_numbers):
-            print('1')
+            print('USER NO HAVE NUMBER')
             lot_numbers_free = numbers.filter(user_id=None)
             print(lot_numbers_free)
             if lot_numbers_free:
-                print(2)
+                print('HAVE FREE')
                 random_idx = random.randint(0, len(lot_numbers_free) - 1)
                 lot_number = lot_numbers_free[random_idx]
                 if request.user.energy > lot_number.lot.energy and request.user != lot_number.lot.user:
-                    print(3)
+                    print('HAVE ENERGY AND NOT YOUR LOT')
                     request.user.energy -= lot_number.lot.energy
                     request.user.save(update_fields=['energy'])
                     lot_number.user = request.user

@@ -8,6 +8,7 @@
     floating
   >
     <v-card
+      v-if="component"
       color="grey lighten-4"
       flat
       tile
@@ -23,26 +24,31 @@
         <Modal v-if="component === 'Profile'" />
       </v-toolbar>
     </v-card>
-    <component :is="component" />
+    <component
+      :is="component"
+      v-if="component"
+    />
   </v-navigation-drawer>
 </template>
 
 <script>
+import Login from '@/components/user/Login'
 import Profile from '@/components/user/Profile'
 import Wins from '@/components/user/Wins'
 import Card from '@/components/lot/detail/Card'
 
 export default {
   name: 'Drawer',
-  components: { Profile, Wins, Card },
+  components: { Login, Profile, Wins, Card },
   data () {
     return {
       components: {
+        Login: { title: 'Логин', color: 'blue', dark: true },
         Profile: { title: 'Профиль', color: 'blue', dark: true },
         Wins: { title: 'Подарки', color: 'pink', dark: true },
         Card: { title: 'Лот', color: 'white', dark: false }
       },
-      component: 'Profile',
+      component: '',
       drawer: false
     }
   },

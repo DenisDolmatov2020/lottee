@@ -1,5 +1,6 @@
 <template>
   <v-dialog
+    v-if="$auth.loggedIn"
     v-model="dialog"
     max-width="600px"
   >
