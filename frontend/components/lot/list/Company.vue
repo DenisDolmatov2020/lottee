@@ -1,6 +1,6 @@
 <template>
   <v-card
-    v-if="$auth.loggedIn && company"
+    v-if="company"
     class="v-sheet--offset mx-auto"
     :color="company.id === $auth.user.id ? 'blue darken-2' : 'green'"
     elevation="12"

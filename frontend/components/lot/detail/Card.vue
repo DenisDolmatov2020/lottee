@@ -187,7 +187,7 @@
       >
         Закрыть
       </v-btn>
-      <v-spacer />
+      <v-spacer  />
       <span v-if="$auth.loggedIn && $auth.user.numbers[lot.id]" class="blue--text text--lighten-1">
         Номер #{{ $auth.user.numbers[lot.id] }}
       </span>
@@ -199,12 +199,13 @@
         Лот завершен
       </span>
       <v-btn
-        v-else
+        v-else-if="!$auth.user.numbers[lot.id]"
         color="primary"
         @click="reserve"
       >
         Резерв
       </v-btn>
+      <span v-else />
     </v-card-actions>
   </div>
 </template>

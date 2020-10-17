@@ -35,9 +35,9 @@
             </v-avatar>
           </div>
           <v-divider :class="['my-2', $auth.loggedIn && $auth.user.numbers[lot.id] ? 'blue' : '']" />
-          <v-row v-if="$auth.loggedIn">
+          <v-row>
             <span
-              v-if="$auth.user && $auth.user.numbers[lot.id]"
+              v-if="$auth.loggedIn && $auth.user.numbers[lot.id]"
               class="text-h6 ml-4 blue--text text--lighten-1"
             >
               {{ `#${$auth.user.numbers[lot.id]}` }}
