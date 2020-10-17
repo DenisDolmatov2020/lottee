@@ -1,5 +1,6 @@
 <template>
   <v-row>
+    1111111 {{ messages }}
     <v-col
       v-for="(lot, i) in l"
       :key="i"
@@ -24,6 +25,8 @@ export default {
     await store.dispatch('lot/fetchLots')
   },
   data: () => ({
+    messages: [],
+    prizeSocket: '',
     visible: false,
     lot: {},
     lot_paid: false,
@@ -47,7 +50,41 @@ export default {
       } */
     }
   },
+  mounted () {
+    // set-up websocket
+    // const chatSocket = new WebSocket('ws://127.0.0.1:8000/ws/prize')
+    /* eslint-disable no-console */
+    /* console.log('MOUNTED SOCKET')
+    console.log(chatSocket)
+    chatSocket.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+      // if (data.message === 'do_update') {
+      //  this.$store.dispatch('todo/getToDos')
+      // }
+      console.log(data)
+    }
+    */
+    this.connect()
+  },
+  created () {
+  },
   methods: {
+    connect () {
+      this.prizeSocket = new WebSocket('ws://127.0.0.1:8000/ws/prize/')
+      this.prizeSocket.onopen = () => {
+        this.prizeSocket.onmessage = ({ data }) => {
+          this.messages.push(JSON.parse(data))
+          // eslint-disable-next-line no-console
+          console.log('message club: ' + data)
+        }
+      }
+    },
+    new_message () {
+      console.log('NEW MESSI')
+      this.prizeSocket.send(JSON.stringify({
+        text: 'INOUT MESSI', user: 3
+      }))
+    },
     async lotDetail (lot) {
       await this.$store.dispatch('lot/lotDetail', lot)
       this.$nuxt.$emit('drawer', 'Card')

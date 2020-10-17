@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'channels',
     'my_user',
     'lot',
     'number',
@@ -66,7 +67,18 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'lottee.routing.application'
 WSGI_APPLICATION = 'lottee.wsgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 
 AUTH_USER_MODEL = 'my_user.User'
 
