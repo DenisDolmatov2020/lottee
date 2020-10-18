@@ -9,3 +9,9 @@ class NumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Number
         fields = ['user', 'id', 'lot', 'num']
+
+
+class WinnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Number
+        fields = ['user', 'num']

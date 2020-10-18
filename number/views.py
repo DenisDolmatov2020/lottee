@@ -1,9 +1,5 @@
 import random
-
 from rest_framework.generics import UpdateAPIView
-from rest_framework.views import APIView
-
-from my_user.serializers import UserSerializer
 from number.serializers import NumberSerializer
 from number.models import Number
 from rest_framework import status
@@ -19,7 +15,7 @@ class NumberListUpdateView(UpdateAPIView):
 
     def partial_update(self, request, *args, **kwargs):
         numbers = Number.objects.select_related('lot__user').filter(lot_id=self.request.data['lot_id'])
-        print(numbers)
+        # print(numbers)
         lot_user_numbers = numbers.filter(user_id=request.user.id)
         if not len(lot_user_numbers):
             print('USER NO HAVE NUMBER')
@@ -29,7 +25,7 @@ class NumberListUpdateView(UpdateAPIView):
                 print('HAVE FREE')
                 random_idx = random.randint(0, len(lot_numbers_free) - 1)
                 lot_number = lot_numbers_free[random_idx]
-                if request.user.energy > lot_number.lot.energy and request.user != lot_number.lot.user:
+                if request.user.energy >= lot_number.lot.energy and request.user != lot_number.lot.user:
                     print('HAVE ENERGY AND NOT YOUR LOT')
                     request.user.energy -= lot_number.lot.energy
                     request.user.save(update_fields=['energy'])
@@ -37,12 +33,13 @@ class NumberListUpdateView(UpdateAPIView):
                     lot_number.save(update_fields=['user'])
                     if len(lot_numbers_free) <= 1 and lot_number.lot.active:
                         choose_winners(lot_number.lot)
+
                     return Response(
                         status=status.HTTP_200_OK,
                         data=lot_number.num
                     )
         serializer = NumberSerializer(numbers, many=True)
-        print('Total requests count: %s' % len(connection.queries))
+        # print('Total requests count: %s' % len(connection.queries))
         return Response(data=serializer.data, status=status.HTTP_403_FORBIDDEN)
 
     '''def patch(request, pk):

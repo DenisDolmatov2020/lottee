@@ -1,6 +1,10 @@
 import requests
 from rest_framework.utils import json
 from number.models import Number
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+from number.serializers import WinnerSerializer
 
 
 def choose_winners(lot):
@@ -26,7 +30,21 @@ def choose_winners(lot):
         lot.winners_complete = json_['result']['random']['completionTime']
         data_ = json_['result']['random']['data']
 
-    wins = Number.objects.filter(lot=lot, num__in=data_).update(won=True)
+    winners = Number.objects.filter(lot=lot, num__in=data_)  # .update(won=True)
     lot.active = False
     lot.save()
-    return wins
+
+    winners_serializer = WinnerSerializer(winners, many=True)
+    w = winners.update(won=True)
+
+    print('winners count %s' % w)
+    # websocket
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)('prize', {
+        'type': 'have_prize',
+        'info': {
+            'lot_id': lot.id,
+            'lot_name': lot.title,
+            'winners': winners_serializer.data
+        }
+    })

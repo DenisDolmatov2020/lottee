@@ -115,7 +115,7 @@
                   >
                     <v-avatar
                       rounded
-                      :tile="winner.user.id !== $auth.user.id"
+                      :tile="$auth.loggedIn && winner.user.id !== $auth.user.id"
                       color="green"
                       size="48"
                     >
@@ -149,7 +149,7 @@
                           </p>
                         </v-col>
                       </v-row>
-                      <div v-if="lot.user.id === $auth.user.id">
+                      <div v-if="$auth.loggedIn && lot.user.id === $auth.user.id">
                         <v-divider class="my-3" />
                         <v-btn
                           depressed
@@ -192,14 +192,14 @@
         Номер #{{ $auth.user.numbers[lot.id] }}
       </span>
       <v-spacer />
-      <span v-if="lot.user.id === $auth.user.id" class="px-2 py-1 blue lighten-1 rounded-sm">
+      <span v-if="$auth.loggedIn && lot.user.id === $auth.user.id" class="px-2 py-1 blue lighten-1 rounded-sm">
         Ваш лот
       </span>
       <span v-else-if="!lot.active" class="success--text">
         Лот завершен
       </span>
       <v-btn
-        v-else-if="!$auth.user.numbers[lot.id]"
+        v-else-if="$auth.loggedIn && !$auth.user.numbers[lot.id]"
         color="primary"
         @click="reserve"
       >

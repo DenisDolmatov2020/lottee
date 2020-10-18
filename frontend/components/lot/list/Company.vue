@@ -2,7 +2,7 @@
   <v-card
     v-if="company"
     class="v-sheet--offset mx-auto"
-    :color="company.id === $auth.user.id ? 'blue darken-2' : 'green'"
+    :color="$auth.loggedIn && company.id === $auth.user.id ? 'blue darken-2' : 'green'"
     elevation="12"
     width="calc(100% - 32px)"
     height="80px"
@@ -32,7 +32,7 @@
     />
     <v-row>
       <span :class="`ml-4 white--text`">
-        {{ $auth.user.id === company.id ? 'Ваш лот' : company.name }}
+        {{ $auth.loggedIn && $auth.user.id === company.id ? 'Ваш лот' : company.name }}
       </span>
     </v-row>
     <v-list-item
