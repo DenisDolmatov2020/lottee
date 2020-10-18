@@ -29,7 +29,7 @@
       >
         <v-row align="center">
           <v-col class="grow">
-            Выигрышный номер #{{ win.num }} {{ $auth.user.wins }}
+            Выигрышный номер #{{ win.num }}
           </v-col>
           <v-col class="shrink">
             <v-btn text @click="$store.dispatch('lot/lotDetail', win.lot)">

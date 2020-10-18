@@ -42,9 +42,9 @@ def choose_winners(lot):
     layer = get_channel_layer()
     async_to_sync(layer.group_send)('prize', {
         'type': 'have_prize',
-        'info': {
-            'lot_id': lot.id,
-            'lot_name': lot.title,
+        'lot': {
+            'id': lot.id,
+            'title': lot.title,
             'winners': winners_serializer.data
         }
     })

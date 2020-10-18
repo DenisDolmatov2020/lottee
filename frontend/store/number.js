@@ -30,13 +30,13 @@ export const actions = {
         data: { lot_id: rootState['lot'].lot.id }
       })
       if (response.status === 200) {
-        $nuxt.$emit('snackbar', { color: 'primary', text: `Ваш номер ${response.data.num}` })
+        $nuxt.$emit('snackbar', { text: `Ваш номер #${response.data}` })
       } else {
         $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
       }
       await this.$auth.fetchUser()
     } catch (error) {
-      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка' })
+      $nuxt.$emit('snackbar', { icon: 'mdi-flash', color: 'indigo', text: 'Недостаточно энергии' })
     }
   }
 }

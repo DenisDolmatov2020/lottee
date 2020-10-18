@@ -44,7 +44,7 @@ export const actions = {
       if (response.status === 201) {
         // await commit('SET_FILTER', 'my')
         await this.$router.push({ path: '/' })
-        $nuxt.$emit('snackbar', { color: 'primary', text: 'Лот создан' })
+        $nuxt.$emit('snackbar', { text: 'Лот создан' })
       } else {
         console.log(JSON.stringify(response))
         $nuxt.$emit('snackbar', { color: 'error', text: 'Лот не создан' })
@@ -61,8 +61,9 @@ export const actions = {
         method: 'GET'
       })
       if (response.status === 200) {
-        commit('SET_LOT', response.data)
+        await commit('SET_LOT', response.data)
       }
+      $nuxt.$emit('drawer', 'Card')
     } catch (error) {
       console.log(error)
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })

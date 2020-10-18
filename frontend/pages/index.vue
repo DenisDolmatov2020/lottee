@@ -14,6 +14,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 // import { mapGetters } from 'vuex'
 import Card from '@/components/lot/list/Card'
 
@@ -44,10 +45,10 @@ export default {
     }
   },
   methods: {
-    async lotDetail (lot) {
-      await this.$store.dispatch('lot/lotDetail', lot)
-      this.$nuxt.$emit('drawer', 'Card')
-    },
+    lotDetail (lot) {
+      this.$store.dispatch('lot/lotDetail', lot)
+    }
+    /*
     async takeNumber (lot) {
       if (this.user.energy >= lot.energy) {
         try {
@@ -70,15 +71,11 @@ export default {
         }
       }
     }
+    */
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.v-sheet--offset {
-  top: -24px;
-}
-.v-card {
-  cursor: pointer;
-}
+
 </style>

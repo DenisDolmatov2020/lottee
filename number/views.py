@@ -38,9 +38,10 @@ class NumberListUpdateView(UpdateAPIView):
                         status=status.HTTP_200_OK,
                         data=lot_number.num
                     )
-        serializer = NumberSerializer(numbers, many=True)
+        # serializer = NumberSerializer(numbers, many=True)
         # print('Total requests count: %s' % len(connection.queries))
-        return Response(data=serializer.data, status=status.HTTP_403_FORBIDDEN)
+        # data=serializer.data,
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     '''def patch(request, pk):
         

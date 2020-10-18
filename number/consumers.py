@@ -47,4 +47,4 @@ class PrizeConsumer(JsonWebsocketConsumer):
         )
 
     def have_prize(self, event):
-        self.send_json(event['info'])
+        self.send_json(event['lot'])
