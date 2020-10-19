@@ -4,7 +4,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.utils import json
 from rest_framework.viewsets import ViewSet
-
 from lottee.permissions import ReadOnly
 from lot.models import Lot, Condition
 from lot.serializers import LotSerializer
@@ -27,6 +26,7 @@ class LotViewSet(ViewSet):
         lot = get_object_or_404(self.queryset, pk=pk)
         if lot.active:
             lot.conditions = Condition.objects.filter(lot_id=lot.id)
+            lot.free_numbers = Number.objects.filter(lot_id=lot.id, user=None).count()
         else:
             lot.wins = Number.objects.filter(lot_id=lot.id, won=True)
         serializer = self.serializer(lot)

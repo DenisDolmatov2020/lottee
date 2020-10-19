@@ -34,19 +34,19 @@
 <script>
 import Login from '@/components/user/Login'
 import Profile from '@/components/user/Profile'
-import Wins from '@/components/user/Wins'
-import Card from '@/components/lot/detail/Card'
+import Victories from '@/components/user/Victories'
+import Detail from '@/components/lot/Detail'
 
 export default {
   name: 'Drawer',
-  components: { Login, Profile, Wins, Card },
+  components: { Login, Profile, Victories, Detail },
   data () {
     return {
       components: {
         Login: { title: 'Логин', color: 'blue', dark: true },
-        Profile: { title: 'Профиль', color: 'blue', dark: true },
-        Wins: { title: 'Подарки', color: 'pink', dark: true },
-        Card: { title: 'Лот', color: 'white', dark: false }
+        Profile: { title: 'Профиль', color: 'blue lighten-1', dark: true },
+        Victories: { title: 'Подарки', color: 'pink', dark: true },
+        Detail: { title: 'Лот', color: 'white', dark: false }
       },
       component: '',
       drawer: false

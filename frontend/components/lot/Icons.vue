@@ -10,10 +10,10 @@
     <span class="subheading mr-2 font-weight-bold pink--text">
       {{ lot.winners }}
     </span>
-    <v-icon color="blue">
+    <v-icon color="indigo">
       mdi-flash
     </v-icon>
-    <span class="subheading mr-2 font-weight-bold blue--text">
+    <span class="subheading mr-2 font-weight-bold indigo--text">
       {{ lot.energy }}
     </span>
     <v-icon class="mr-1" color="green">

@@ -2,7 +2,7 @@
   <v-card
     v-if="company"
     class="v-sheet--offset mx-auto"
-    :color="$auth.loggedIn && company.id === $auth.user.id ? 'blue darken-2' : 'green'"
+    :color="$auth.loggedIn && company.id === $auth.user.id ? 'blue lighten-1' : 'green'"
     elevation="12"
     width="calc(100% - 32px)"
     height="80px"
@@ -58,5 +58,6 @@ export default {
 <style scoped>
 .v-sheet--offset {
   top: -24px;
+  margin-top: 24px;
 }
 </style>

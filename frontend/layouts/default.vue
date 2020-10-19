@@ -1,18 +1,13 @@
 <template>
   <v-app id="main" :style="{background: $vuetify.theme.themes[theme].background}">
-    <Menu />
-    <Speed3 />
+    <Logo />
+    <Speed />
     <v-main>
       <v-container>
-        1111111 {{ messages }}
-        <v-btn>
-          SEND MESSI
-        </v-btn>
         <nuxt />
       </v-container>
     </v-main>
     <Drawer />
-    <CreateFab />
     <Snackbar />
   </v-app>
 </template>
@@ -20,9 +15,6 @@
 <script>
 /* eslint-disable no-console */
 export default {
-  data: () => ({
-    messages: []
-  }),
   computed: {
     theme () {
       return (this.$vuetify.theme.dark) ? 'dark' : 'light'
@@ -33,7 +25,6 @@ export default {
     console.log(prizeSocket)
     prizeSocket.onopen = () => {
       prizeSocket.onmessage = ({ data }) => {
-        this.messages.push(JSON.parse(data))
         const lot = JSON.parse(data)
         console.log('Data LOTS WINNERS DATA: ' + data)
         setTimeout(function () {

@@ -3,9 +3,7 @@
     v-if="$auth.loggedIn"
     tile
   >
-    <v-img
-      height="100%"
-    >
+    <v-img height="100%">
       <v-row
         align="end"
         class="fill-height"
@@ -106,5 +104,3 @@ export default {
   name: 'Profile'
 }
 </script>
-
-<style scoped></style>

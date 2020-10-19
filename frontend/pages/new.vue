@@ -253,7 +253,6 @@ export default {
       this.lot.image = event.target.files[0]
     },
     async addLot (conditions) {
-      console.log(JSON.stringify(conditions))
       await this.$nuxt.$emit('preload-on')
       await this.$store.dispatch('lot/fetchLot', { lot: this.lot, conditions })
     }

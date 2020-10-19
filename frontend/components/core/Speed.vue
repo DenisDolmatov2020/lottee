@@ -1,268 +1,172 @@
 <template>
-  <div>
-    <div
-      v-if="$store.getters['user/isAuthenticated']"
-      :class="['button-icon-logout']"
-      @click="$store.dispatch('user/logout')"
+  <v-card id="create">
+    <v-tooltip v-if="!$auth.loggedIn" left fixed>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          fixed
+          color="blue darken-2"
+          fab
+          dark
+          class="btn-no-auth"
+          v-bind="attrs"
+          v-on="on"
+          @click="drawer('Login')"
+        >
+          <v-icon>
+            mdi-account
+          </v-icon>
+        </v-btn>
+      </template>
+      <span>Вход</span>
+    </v-tooltip>
+    <v-speed-dial
+      v-else
+      v-model="fab"
+      fixed
+      top
+      right
+      direction="bottom"
+      slide-x-reverse-transition
     >
-      <img
-        alt="logout"
-        :src="require('~/assets/icons/door.svg')"
-      >
-      <span class="icon-text">
-        Выйти
-      </span>
-    </div>
-    <div
-      v-if="$store.getters['user/isAuthenticated']"
-      class="button-icon-bell"
-      @click="$store.commit('notification/BELL')"
-    >
-      <img
-        alt="logout"
-        :src="require('~/assets/icons/bell.svg')"
-      >
-      <span class="icon-text">
-        Уведомления
-      </span>
-    </div>
-    <div
-      v-if="$route.path !== '/login'"
-      :class="['button-icon-user', $store.getters['user/isAuthenticated'] ? 'button-icon-user-auth':'button-icon-user-not-auth']"
-      @click="openUser"
-    >
-      <img
-        :src="$store.getters['user/isAuthenticated'] ? require('~/assets/icons/user_cog.svg') : require('~/assets/icons/user_round.svg')"
-      >
-      <span>
-        {{ $store.getters['user/isAuthenticated'] ? 'Профиль' : 'Логин' }}
-      </span>
-    </div>
-    <div
-      v-if="$store.getters['user/isAuthenticated']"
-      class="button-energy"
-    >
-      <span class="count">
-        {{ user.energy }}
-      </span>
-      <img
-        width="32px"
-        height="32px"
-        :src="require('~/assets/icons/flash.svg')"
-      >
-    </div>
-    <div
-      v-if="$store.getters['user/isAuthenticated']"
-      class="button-karma"
-      @click="drawer('Karma')"
-    >
-      <span class="count">
-        {{ user.karma }}
-      </span>
-      <img
-        width="32px"
-        height="32px"
-        :src="require('~/assets/icons/karma.svg')"
-      >
-    </div>
-  </div>
-</template>
+      <template v-slot:activator>
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-model="fab"
+              color="blue darken-2"
+              dark
+              fab
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon v-if="fab">
+                mdi-close
+              </v-icon>
+              <v-avatar v-else-if="$auth.user.image">
+                <v-img :src="$auth.user.image" />
+              </v-avatar>
+              <v-icon v-else large>
+                mdi-account-circle
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>Профиль</span>
+        </v-tooltip>
+      </template>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="green"
+            v-bind="attrs"
+            v-on="on"
+            @click="drawer('Profile')"
+          >
+            <v-icon>mdi-cog</v-icon>
+          </v-btn>
+        </template>
+        <span>Настройки</span>
+      </v-tooltip>
 
+      <v-badge
+        v-if="$auth.user.wins"
+        color="pink lighten-1"
+        :content="String($auth.user.wins.length)"
+        bordered
+        inline
+        left
+        tile
+        overlap
+      >
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              fab
+              dark
+              small
+              color="pink"
+              v-bind="attrs"
+              v-on="on"
+              @click="drawer('Victories')"
+            >
+              <v-icon>mdi-gift</v-icon>
+            </v-btn>
+          </template>
+          <span>Выигранные призы</span>
+        </v-tooltip>
+      </v-badge>
+
+      <v-badge
+        inline
+        tile
+        :content="String($auth.user.energy)"
+        color="indigo"
+      >
+        <v-btn
+          fab
+          dark
+          small
+          color="indigo"
+        >
+          <v-icon>mdi-flash</v-icon>
+        </v-btn>
+      </v-badge>
+
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="red"
+            v-bind="attrs"
+            v-on="on"
+            @click="logout"
+          >
+            <v-icon>mdi-door</v-icon>
+          </v-btn>
+        </template>
+        <span>Выйти</span>
+      </v-tooltip>
+    </v-speed-dial>
+  </v-card>
+</template>
 <script>
+import { mapActions } from 'vuex'
 
 export default {
-  name: 'Speed',
-  data () {
-    return {
-      open: false,
-      profile: {
-        energy: 10000
-      }
-    }
-  },
-  computed: {
-    user () {
-      return this.$store.getters['user/user']
-    }
-  },
+  data: () => ({
+    direction: 'top',
+    fab: false
+  }),
   methods: {
-    openUser () {
-      if (this.$store.getters['user/isAuthenticated']) {
-        // this.$router.push('/user/profile')
-        this.drawer('Profile')
-      } else {
-        this.$router.push('/login')
-      }
+    toLogin () {
+      this.$router.push('/login')
     },
+    ...mapActions('user', [
+      'logout'
+    ]),
     drawer (component) {
       this.$nuxt.$emit('drawer', component)
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-  /* bell */
-  .button-icon-user,
-  .button-icon-logout,
-  .button-icon-bell,
-  .button-energy,
-  .button-star,
-  .button-karma {
-    position: fixed;
-    z-index: 9;
-    border: solid #FFFFFF;
-    border-radius: 60px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px, rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
-  }
-  .main {
+<style scoped>
+  /* This is for documentation purposes and will not be needed in your application */
+  #create .v-speed-dial {
     position: absolute;
-    top: 140px;
-    right: 10%;
-    min-width: 500px;
-    min-height: 500px;
-    padding: 5px;
   }
-  .button-energy,
-  .button-star,
-  .button-karma {
-    right: 29px;
-    width: 38px;
-    height: 38px;
-    padding: 5px;
-    text-align: center;
-    background-color: #FFFFFF;
-    .count {
-      font-family: monospace;
-      position: absolute;
-      min-width: 10px;
-      padding: 0 4px;
-      border-radius: 50px;
-      top: 35px;
-      right: -12px;
-      color: #FFFFFF;
-    }
+
+  #create .v-btn--floating {
+    position: relative;
   }
-  .button-energy {
-    top: 95px;
-    /*
-    &:hover {
-      border-color: rgb(13, 71, 161);
-    }
-    */
-    .count {
-      background-color: rgb(13, 71, 161);
-    }
-  }
-  /*
-  .button-star {
-    top: 160px;
-    &:hover {
-      border-color: rgb(255, 193, 7);
-      // background-color: rgb(255, 193, 7);
-    }
-    .count {
-      background-color: rgb(255, 193, 7);
-    }
-  }
-  */
-  .button-karma {
-    top: 160px;
-    /*
-    &:hover {
-      border-color: #424242;
-      // background-color: #424242
-    }
-    */
-    .count {
-      background-color: #424242;
-    }
-  }
-  /* user */
-  .button-icon-user-auth {
-    background-color: #43A047;
-  }
-  .button-icon-user-not-auth {
-    background-color: #0277BD
-  }
-  .button-icon-bell,
-  .button-icon-logout {
-    cursor: pointer;
-    right: 160px;
-    width:42px;
-    height: 42px;
-    background-color: #F44336;
-    img {
-      width: 28px;
-      top: 8px;
-      left: 8px;
-    }
-    .icon-text {
-      top: 10px;
-      right: 10px;
-    }
-  }
-  .button-icon-bell {
-    right: 100px;
-    background-color: #424242;
-    img {
-      width: 22px;
-      top: 6px;
-      left: 10px;
-    }
-    .count {
-      position: relative;
-      top: -5px;
-      left: 5px;
-      background-color: #43A047;
-      color: #FEFEFE;
-      padding: 5px;
-    }
-  }
-  .button-icon-user {
-    cursor: pointer;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    img {
-      width: 36px;
-      top: 10px;
-      left: 10px;
-    }
-    span {
-      top: 15px;
-      right: 15px;
-    }
-  }
-  .button-icon-logout,
-  .button-icon-bell {
-    &:hover {
-      width: 156px;
-      span {
-        opacity: 1;
-        visibility: visible;
-      }
-    }
-  }
-  .button-icon-user {
-    &:hover {
-      border-color: #0277BD;
-    }
-  }
-  .button-icon-logout,
-  .button-icon-bell,
-  .button-icon-user {
+  .btn-no-auth {
+    z-index: 1;
+    position: absolute;
     top: 16px;
-    transition: .5s ease-in-out;
-    img {
-      position: absolute;
-    }
-    span {
-      position: absolute;
-      color: white;
-      opacity: 0;
-      visibility: hidden;
-      transition: .35s opacity, .35s visibility;
-    }
+    right: 16px;
   }
 </style>

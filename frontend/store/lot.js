@@ -4,15 +4,10 @@
 export const state = () => ({
   url: '/api/lot/',
   lot: {},
-  lots: [],
-  api_url: process.env.API_URL,
-  filter: null
+  lots: []
 })
 
 export const mutations = {
-  SET_FILTER (state, filter) {
-    state.filter = filter
-  },
   SET_LOT (state, lot) {
     state.lot = lot
   },
@@ -22,6 +17,24 @@ export const mutations = {
 }
 
 export const actions = {
+  async reserve({ state, commit, dispatch }) {
+    try {
+      const response = await this.$axios({
+        url: '/api/number/',
+        method: 'PATCH',
+        data: { lot_id: state.lot.id }
+      })
+      if (response.status === 200) {
+        $nuxt.$emit('snackbar', { text: `Ваш номер #${response.data}` })
+      } else {
+        $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
+      }
+      dispatch('lotDetail', state.lot.id)
+      this.$auth.fetchUser()
+    } catch (error) {
+      $nuxt.$emit('snackbar', { icon: 'mdi-flash', color: 'indigo', text: 'Недостаточно энергии' })
+    }
+  },
   async fetchLot ({ state, commit, dispatch }, payload) {
     payload.lot.conditions = JSON.stringify(payload.conditions)
     const formData = new FormData()
@@ -42,11 +55,9 @@ export const actions = {
         data: formData
       })
       if (response.status === 201) {
-        // await commit('SET_FILTER', 'my')
         await this.$router.push({ path: '/' })
         $nuxt.$emit('snackbar', { text: 'Лот создан' })
       } else {
-        console.log(JSON.stringify(response))
         $nuxt.$emit('snackbar', { color: 'error', text: 'Лот не создан' })
       }
     } catch (error) {
@@ -63,14 +74,12 @@ export const actions = {
       if (response.status === 200) {
         await commit('SET_LOT', response.data)
       }
-      $nuxt.$emit('drawer', 'Card')
+      $nuxt.$emit('drawer', 'Detail')
     } catch (error) {
-      console.log(error)
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })
     }
-    $nuxt.$emit('drawer', 'Card')
   },
-  async fetchLots ({ state, commit, dispatch }) {
+  async fetchLots ({ state, commit }) {
     try {
       const response = await this.$axios({
         url: state.url,
@@ -88,8 +97,6 @@ export const actions = {
 }
 
 export const getters = {
-  lot: s => s.lot,
-  lots: s => s.lots,
-  filter: s => s.filter
+  lot: s => s.lot
 }
 

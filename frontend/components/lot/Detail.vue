@@ -181,30 +181,23 @@
     <v-divider class="mx-4" />
     <v-card-actions class="mx-2">
       <v-btn
-        color="red"
-        text
-        @click="$nuxt.$emit('drawer-close')"
-      >
-        Закрыть
-      </v-btn>
-      <v-spacer />
-      <span v-if="$auth.loggedIn && $auth.user.numbers[lot.id]" class="blue--text text--lighten-1">
-        Номер #{{ $auth.user.numbers[lot.id] }}
-      </span>
-      <v-spacer />
-      <span v-if="$auth.loggedIn && lot.user.id === $auth.user.id" class="px-2 py-1 blue lighten-1 rounded-sm">
-        Ваш лот
-      </span>
-      <span v-else-if="!lot.active" class="success--text">
-        Лот завершен
-      </span>
-      <v-btn
-        v-else-if="$auth.loggedIn && !$auth.user.numbers[lot.id]"
-        color="primary"
+        v-if="$auth.loggedIn && lot.user.id !== $auth.user.id && !$auth.user.numbers[lot.id] && lot.active"
+        dark
+        color="blue lighten-1"
+        block
         @click="reserve"
       >
-        Резерв
+        Резерв {{ lot.free_numbers }}
       </v-btn>
+      <v-row v-else>
+        <v-col cols="5" class="blue--text text--lighten-1">
+          {{ $auth.loggedIn && $auth.user.numbers[lot.id] ? `Ваш номер #${$auth.user.numbers[lot.id]}` : '' }}
+        </v-col>
+        <v-spacer />
+        <v-col :class="lot.active ? 'success--text' : 'error--text'">
+          {{ lot.active ? `Свободно ${lot.free_numbers}` : 'Лот завершен' }}
+        </v-col>
+      </v-row>
     </v-card-actions>
   </div>
 </template>
@@ -213,7 +206,7 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
-  name: 'Card',
+  name: 'Detail',
   data: () => ({
     show: false,
     loading: false,
@@ -233,12 +226,12 @@ export default {
     ]
   }),
   computed: {
-    ...mapState('lot', {
-      lot: state => state.lot
-    })
+    ...mapState('lot', [
+      'lot'
+    ])
   },
   methods: {
-    ...mapActions('number', [
+    ...mapActions('lot', [
       'reserve'
     ])
   }

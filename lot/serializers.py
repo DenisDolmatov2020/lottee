@@ -23,6 +23,7 @@ class LotSerializer(serializers.ModelSerializer):
     )
     conditions = ConditionSerializer(many=True, required=False)
     wins = NumberSerializer(many=True, read_only=True)
+    free_numbers = serializers.IntegerField(read_only=True, required=False)
 
     class Meta:
         model = Lot
