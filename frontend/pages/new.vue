@@ -254,7 +254,7 @@ export default {
     },
     async addLot (conditions) {
       await this.$nuxt.$emit('preload-on')
-      await this.$store.dispatch('lot/fetchLot', { lot: this.lot, conditions })
+      await this.$store.dispatch('lot/createLot', { lot: this.lot, conditions })
     }
   }
 }

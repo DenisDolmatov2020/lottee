@@ -79,6 +79,7 @@ export const actions = {
   },
   async logout () {
     await this.$auth.logout()
+    this.$router.push('/login')
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
   },
 }

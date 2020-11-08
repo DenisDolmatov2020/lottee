@@ -10,7 +10,7 @@
           class="btn-no-auth"
           v-bind="attrs"
           v-on="on"
-          @click="drawer('Login')"
+          @click="drawer('/login')"
         >
           <v-icon>
             mdi-account
@@ -62,7 +62,7 @@
             color="green"
             v-bind="attrs"
             v-on="on"
-            @click="drawer('Profile')"
+            @click="drawer('/profile')"
           >
             <v-icon>mdi-cog</v-icon>
           </v-btn>
@@ -89,7 +89,7 @@
               color="pink"
               v-bind="attrs"
               v-on="on"
-              @click="drawer('Victories')"
+              @click="drawer('/victories')"
             >
               <v-icon>mdi-gift</v-icon>
             </v-btn>
@@ -142,15 +142,12 @@ export default {
     fab: false
   }),
   methods: {
-    toLogin () {
-      this.$router.push('/login')
+    drawer (url) {
+      this.$router.push(url)
     },
     ...mapActions('user', [
       'logout'
-    ]),
-    drawer (component) {
-      this.$nuxt.$emit('drawer', component)
-    }
+    ])
   }
 }
 </script>

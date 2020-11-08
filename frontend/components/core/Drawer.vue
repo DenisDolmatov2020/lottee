@@ -8,53 +8,51 @@
     floating
   >
     <v-card
-      v-if="component"
       color="grey lighten-4"
       flat
       tile
     >
-      <v-toolbar dense :color="components[component].color" :dark="components[component].dark">
+      <v-toolbar dense :color="pages[$route.name].color" :dark="pages[$route.name].dark">
         <v-btn icon @click="drawer = false">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
 
-        <v-toolbar-title>{{ components[component].title }}</v-toolbar-title>
+        <v-toolbar-title>{{ pages[$route.name].title }}</v-toolbar-title>
 
         <v-spacer />
-        <Modal v-if="component === 'Profile'" />
+        <Modal v-if="$route.name === 'profile'" />
       </v-toolbar>
     </v-card>
-    <component
-      :is="component"
-      v-if="component"
-    />
+    <nuxt />
   </v-navigation-drawer>
 </template>
 
 <script>
-import Login from '@/components/user/Login'
-import Profile from '@/components/user/Profile'
-import Victories from '@/components/user/Victories'
-import Detail from '@/components/lot/Detail'
 
 export default {
   name: 'Drawer',
-  components: { Login, Profile, Victories, Detail },
+  fetch () {
+    this.drawer = true
+  },
   data () {
     return {
-      components: {
-        Login: { title: 'Логин', color: 'blue', dark: true },
-        Profile: { title: 'Профиль', color: 'blue lighten-1', dark: true },
-        Victories: { title: 'Подарки', color: 'pink', dark: true },
-        Detail: { title: 'Лот', color: 'white', dark: false }
-      },
-      component: '',
-      drawer: false
+      drawer: false,
+      pages: {
+        login: { title: 'Логин', color: 'blue', dark: true },
+        profile: { title: 'Профиль', color: 'blue lighten-1', dark: true },
+        victories: { title: 'Подарки', color: 'pink', dark: true },
+        'lot-id': { title: 'Лот', color: 'white', dark: false }
+      }
+    }
+  },
+  watch: {
+    drawer (value) {
+      console.log('WATCH : ' + value)
+      if (!value) { this.$router.push('/') }
     }
   },
   created () {
-    this.$nuxt.$on('drawer', (component) => {
-      this.component = component
+    this.$nuxt.$on('drawer-open', () => {
       this.drawer = true
     })
     this.$nuxt.$on('drawer-close', () => {

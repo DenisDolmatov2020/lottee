@@ -29,13 +29,13 @@ export const actions = {
       } else {
         $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
       }
-      dispatch('lotDetail', state.lot.id)
+      // dispatch('fetchLot', this.$route.params.id)
       this.$auth.fetchUser()
     } catch (error) {
-      $nuxt.$emit('snackbar', { icon: 'mdi-flash', color: 'indigo', text: 'Недостаточно энергии' })
+      $nuxt.$emit('snackbar', { icon: 'mdi-flash', color: 'error', text: 'Недостаточно энергии' })
     }
   },
-  async fetchLot ({ state, commit, dispatch }, payload) {
+  async createLot ({ state, commit, dispatch }, payload) {
     payload.lot.conditions = JSON.stringify(payload.conditions)
     const formData = new FormData()
     const keys = Object.keys(payload.lot)
@@ -64,7 +64,7 @@ export const actions = {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при создании лота' })
     }
   },
-  async lotDetail ({ state, commit }, lot_id) {
+  async fetchLot ({ state, commit }, lot_id) {
     try {
       const response = await this.$axios({
         url: `${state.url}/${lot_id}`,
@@ -74,7 +74,6 @@ export const actions = {
       if (response.status === 200) {
         await commit('SET_LOT', response.data)
       }
-      $nuxt.$emit('drawer', 'Detail')
     } catch (error) {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })
     }

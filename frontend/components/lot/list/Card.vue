@@ -5,7 +5,7 @@
         class="my-12 mx-auto"
         width="400"
         :elevation="hover ? 24 : 3"
-        @click="lotDetail(lot.id)"
+        @click="$router.push(`/lot/${lot.id}`)"
       >
         <Company :company="lot.user" />
         <v-card-text class="pt-0">
@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     ...mapActions('lot', [
-      'lotDetail'
+      'fetchLot'
     ])
   }
 }

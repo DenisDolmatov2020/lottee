@@ -34,6 +34,7 @@ class NumberListUpdateView(UpdateAPIView):
                     if len(lot_numbers_free) <= 1 and lot_number.lot.active:
                         choose_winners(lot_number.lot)
 
+                    print('RESPONSE 2000 ', lot_number)
                     return Response(
                         status=status.HTTP_200_OK,
                         data=lot_number.num
