@@ -10,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from my_user.serializers import UserSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser, FileUploadParser
 
-from number.serializers import NumberSerializer
+from winner.serializers import PrizeSerializer
 
 
 class UserCreateView(CreateAPIView):
@@ -41,7 +41,7 @@ class UserRetrieveUpdateView(RetrieveUpdateAPIView):
         data_ = serializer.data
         data_['numbers'] = {number.lot_id: number.num for number in user_numbers}
         # user wins
-        wins = NumberSerializer(user_numbers.filter(won=True), many=True)
+        wins = PrizeSerializer(user_numbers.filter(won=True), many=True)
         print(wins.data)
         data_['wins'] = wins.data
         print('Total requests count: %s' % len(connection.queries))

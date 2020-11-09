@@ -89,7 +89,7 @@
               color="pink"
               v-bind="attrs"
               v-on="on"
-              @click="drawer('/victories')"
+              @click="drawer('/prize')"
             >
               <v-icon>mdi-gift</v-icon>
             </v-btn>

@@ -1,5 +1,6 @@
 <template>
   <div v-if="lot.id && +lot.id === +$route.params.id">
+    <Header :page="{ title: 'Лот', color: 'white', dark: false, update: false }" />
     <v-carousel
       cycle
       height="250"
@@ -101,76 +102,23 @@
               cols="2"
               active-class="deep-purple accent-4 white--text"
             >
-              <v-menu
-                bottom
-                min-width="200px"
-                rounded
-                offset-y
+              <v-btn
+                icon
+                x-large
+                @click="$router.push({ name: 'profile', params: { user: winner.user }})"
               >
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    x-large
-                    v-on="on"
-                  >
-                    <v-avatar
-                      rounded
-                      :tile="$auth.loggedIn && winner.user.id !== $auth.user.id"
-                      color="green"
-                      size="48"
-                    >
-                      <img v-if="winner.user.image" :src="winner.user.image">
-                      <v-icon v-else color="white">
-                        mdi-account-outline
-                      </v-icon>
-                    </v-avatar>
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-list-item-content class="justify-center">
-                    <div class="mx-auto text-center">
-                      <v-row>
-                        <v-col>
-                          <v-avatar
-                            rounded
-                            :tile="winner.user.id !== $auth.user.id"
-                            color="green"
-                          >
-                            <img v-if="winner.user.image" :src="winner.user.image">
-                            <v-icon v-else color="white">
-                              mdi-account-outline
-                            </v-icon>
-                          </v-avatar>
-                        </v-col>
-                        <v-col>
-                          <h3>{{ winner.user.name }}</h3>
-                          <p class="caption mt-1">
-                            {{ winner.user.email }}
-                          </p>
-                        </v-col>
-                      </v-row>
-                      <div v-if="$auth.loggedIn && lot.user.id === $auth.user.id">
-                        <v-divider class="my-3" />
-                        <v-btn
-                          depressed
-                          rounded
-                          text
-                        >
-                          {{ winner.user.phone }} {{ lot.user.id }} {{ $auth.user.id }}
-                        </v-btn>
-                        <v-divider class="my-3" />
-                        <v-btn
-                          depressed
-                          rounded
-                          text
-                        >
-                          {{ winner.user.address }}
-                        </v-btn>
-                      </div>
-                    </div>
-                  </v-list-item-content>
-                </v-card>
-              </v-menu>
+                <v-avatar
+                  rounded
+                  :tile="$auth.loggedIn && winner.user.id === $auth.user.id"
+                  :color="$auth.loggedIn && winner.user.id === $auth.user.id ? 'blue' : 'green'"
+                  size="48"
+                >
+                  <img v-if="winner.user.image" :src="winner.user.image">
+                  <v-icon v-else color="white">
+                    mdi-account-outline
+                  </v-icon>
+                </v-avatar>
+              </v-btn>
             </v-col>
           </v-row>
         </div>

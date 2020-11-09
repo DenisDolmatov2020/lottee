@@ -38,3 +38,9 @@ class LotSerializer(serializers.ModelSerializer):
                 for condition in conditions_data
             )
         return lot
+
+
+class LotPrizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lot
+        fields = ['id', 'title']

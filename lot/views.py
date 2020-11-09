@@ -46,10 +46,3 @@ class LotViewSet(ViewSet):
             print(serializer.data)
             print(serializer.errors)
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class TimelinesList(ListAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = LotSerializer
-    queryset = Lot.objects.filter(active=False)
-

@@ -1,114 +1,118 @@
 <template>
-  <div class="user-container">
-    <div class="content-w3ls">
-      <div class="content-bottom">
-        <div
-          v-if="$route.query.message"
-          class="login-first"
-        >
-          Необходимо войти
-        </div>
-        <div class="form-buttons">
-          <h2>
-            {{ log ? 'Логин' : 'Регистрация' }}
-          </h2>
-          <h5 @click="log = !log">
-            {{ log ? 'Регистрация' : 'Логин' }}
-          </h5>
-        </div>
-        <div
-          v-if="!log"
-          class="field-group"
-        >
-          <img
-            alt="user icon"
-            class="icon-field"
-            :src="require('assets/icons/user.svg')"
-          >
-          <div class="wthree-field">
-            <input
-              v-model="username"
-              name="username"
-              type="text"
-              value=""
-              placeholder="Username"
-              required
-            >
-          </div>
-        </div>
-        <div
-          class="field-group"
-        >
-          <img
-            alt="email icon"
-            class="icon-field"
-            :src="require('assets/icons/email.svg')"
-          >
-          <div class="wthree-field">
-            <input
-              id="email"
-              v-model="email"
-              name="email"
-              type="email"
-              value=""
-              placeholder="E-mail"
-              required
-            >
-          </div>
-        </div>
-        <div class="field-group">
-          <img
-            alt="lock icon"
-            class="icon-field"
-            :src="require('assets/icons/lock.svg')"
-          >
-          <div class="wthree-field">
-            <input
-              id="password"
-              v-model="password"
-              name="password"
-              :type="showPassword ? 'text' : 'password'"
-              placeholder="Пароль"
-            >
-          </div>
-        </div>
-        <div
-          v-if="!log"
-          class="field-group"
-        >
-          <img
-            alt="lock icon"
-            class="icon-field"
-            :src="require('assets/icons/lock.svg')"
-          >
-          <div class="wthree-field">
-            <input
-              id="password-repeat"
-              v-model="password_repeat"
-              name="password-repeat"
-              :type="showPassword ? 'text' : 'password'"
-              placeholder="Повтор пароля"
-            >
-          </div>
-        </div>
-        <div class="field-group-2">
-          <div class="switch-agileits">
-            <label class="switch">
-              <input v-model="showPassword" type="checkbox">
-              <span class="slider round" />
-              показать пароль
-            </label>
-          </div>
-        </div>
+  <div>
+    <Header :page="{ title: 'Логин', color: 'blue', dark: true, update: false }" />
 
-        <div
-          class="btn btn-entry"
-          @click="login"
-        >
-          {{ log ? 'Войти' : 'Создать' }}
-        </div>
-        <div v-if="log" class="forgot-password">
-          забыли пароль?
+    <div class="user-container">
+      <div class="content-w3ls">
+        <div class="content-bottom">
+          <div
+            v-if="$route.query.message"
+            class="login-first"
+          >
+            Необходимо войти
+          </div>
+          <div class="form-buttons">
+            <h2>
+              {{ log ? 'Логин' : 'Регистрация' }}
+            </h2>
+            <h5 @click="log = !log">
+              {{ log ? 'Регистрация' : 'Логин' }}
+            </h5>
+          </div>
+          <div
+            v-if="!log"
+            class="field-group"
+          >
+            <img
+              alt="user icon"
+              class="icon-field"
+              :src="require('assets/icons/user.svg')"
+            >
+            <div class="wthree-field">
+              <input
+                v-model="username"
+                name="username"
+                type="text"
+                value=""
+                placeholder="Username"
+                required
+              >
+            </div>
+          </div>
+          <div
+            class="field-group"
+          >
+            <img
+              alt="email icon"
+              class="icon-field"
+              :src="require('assets/icons/email.svg')"
+            >
+            <div class="wthree-field">
+              <input
+                id="email"
+                v-model="email"
+                name="email"
+                type="email"
+                value=""
+                placeholder="E-mail"
+                required
+              >
+            </div>
+          </div>
+          <div class="field-group">
+            <img
+              alt="lock icon"
+              class="icon-field"
+              :src="require('assets/icons/lock.svg')"
+            >
+            <div class="wthree-field">
+              <input
+                id="password"
+                v-model="password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Пароль"
+              >
+            </div>
+          </div>
+          <div
+            v-if="!log"
+            class="field-group"
+          >
+            <img
+              alt="lock icon"
+              class="icon-field"
+              :src="require('assets/icons/lock.svg')"
+            >
+            <div class="wthree-field">
+              <input
+                id="password-repeat"
+                v-model="password_repeat"
+                name="password-repeat"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Повтор пароля"
+              >
+            </div>
+          </div>
+          <div class="field-group-2">
+            <div class="switch-agileits">
+              <label class="switch">
+                <input v-model="showPassword" type="checkbox">
+                <span class="slider round" />
+                показать пароль
+              </label>
+            </div>
+          </div>
+
+          <div
+            class="btn btn-entry"
+            @click="login"
+          >
+            {{ log ? 'Войти' : 'Создать' }}
+          </div>
+          <div v-if="log" class="forgot-password">
+            забыли пароль?
+          </div>
         </div>
       </div>
     </div>
