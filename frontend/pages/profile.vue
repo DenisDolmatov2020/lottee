@@ -105,15 +105,9 @@
 
 <script>
 export default {
-  props: {
-    user: {
-      type: Object,
-      default: null
-    }
-  },
   computed: {
     profile () {
-      return this.user || this.$auth.user
+      return this.$route.params.user || this.$auth.user
     },
     my_profile () {
       return this.profile.id === this.$auth.user.id

@@ -4,8 +4,9 @@ from number.models import Number
 
 
 class PrizeSerializer(serializers.ModelSerializer):
-    lot = LotPrizeSerializer()
+    lot = LotPrizeSerializer(read_only=True)
 
     class Meta:
         model = Number
-        fields = ['id', 'lot', 'num']
+        fields = ['id', 'lot', 'num', 'score']
+        read_only_fields = ('id', 'lot', 'num')

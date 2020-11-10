@@ -1,11 +1,7 @@
-from django.urls import path
 from rest_framework.routers import DefaultRouter
-from lot.views import LotViewSet, TimelinesList
+from lot.views import LotViewSet
 
-urlpatterns = [
-    path('timelines/', TimelinesList.as_view(), name='TimelinesListView'),
-]
 
 router = DefaultRouter()
 router.register(r'', LotViewSet, basename='lots')
-urlpatterns += router.urls
+urlpatterns = router.urls

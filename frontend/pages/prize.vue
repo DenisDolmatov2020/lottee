@@ -2,8 +2,8 @@
   <div>
     <Header :page="{ title: 'Подарки', color: 'purple', dark: true, update: false }" />
     <v-alert
-      v-for="win in $auth.user.wins"
-      :key="win.id"
+      v-for="prize in prizes"
+      :key="prize.id"
       class="ma-4"
       color="pink"
       dark
@@ -13,10 +13,10 @@
     >
       <v-row align="center">
         <v-col class="grow">
-          Вы выиграли {{ win.lot.title }}, номер #{{ win.num }}
+          Вы выиграли {{ prize.lot.title }}, номер #{{ prize.num }}
         </v-col>
         <v-col class="shrink">
-          <v-btn text @click="$router.push(`/lot/${win.lot.id}`)">
+          <v-btn text @click="$router.push(`/lot/${prize.lot.id}`)">
             Перейти
           </v-btn>
         </v-col>
@@ -28,9 +28,13 @@
 <script>
 export default {
   middleware: ['auth'],
+  async fetch () {
+    this.prizes = await this.$axios.$get('/api/prize')
+  },
   data () {
     return {
-      alert: true
+      alert: true,
+      prizes: []
     }
   }
 }

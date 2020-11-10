@@ -13,10 +13,21 @@ export const mutations = {
   },
   SET_LOTS (state, lots) {
     state.lots = lots
+  },
+  SET_SCORE (state, number) {
+    state.lot.wins.find(win => win.id === number.id).score = number.score
   }
 }
 
 export const actions = {
+  async setScore({state, commit}, payload) {
+    const response = await this.$axios({
+      url: `/api/prize/${payload.number_id}`,
+      method: 'PATCH',
+      data: { score: payload.score },
+    })
+    commit('SET_SCORE', response.data)
+  },
   async reserve({ state, commit, dispatch }) {
     try {
       const response = await this.$axios({

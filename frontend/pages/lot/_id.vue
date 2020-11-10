@@ -88,19 +88,29 @@
       </v-card-text>
     </v-card>
     <div v-else-if="!lot.active && lot.wins">
-      <v-card-title class="red--text text-lighten-1">
-        Победители
-        <v-spacer />
-      </v-card-title>
+      <v-card
+        class="mx-auto my-2"
+        max-width="460"
+        rounded="xl"
+      >
+        <v-card-title class="deep-purple--text text-lighten-1">
+          Победител{{ lot.wins.length === 1 ? 'ь' : 'и' }}
+          {{ lot.wins }}
+          <v-spacer />
+          <v-btn icon large>
+            <v-icon color="deep-purple">
+              mdi-comment-question
+            </v-icon>
+          </v-btn>
+        </v-card-title>
 
-      <v-card-text>
-        <div>
+        <v-card-text>
           <v-row>
             <v-col
               v-for="winner in lot.wins"
               :key="`winner_${winner.id}`"
               cols="2"
-              active-class="deep-purple accent-4 white--text"
+              active-class="deep-purple white--text"
             >
               <v-btn
                 icon
@@ -108,21 +118,36 @@
                 @click="$router.push({ name: 'profile', params: { user: winner.user }})"
               >
                 <v-avatar
-                  rounded
-                  :tile="$auth.loggedIn && winner.user.id === $auth.user.id"
+                  :rounded="$auth.loggedIn && winner.user.id === $auth.user.id"
                   :color="$auth.loggedIn && winner.user.id === $auth.user.id ? 'blue' : 'green'"
                   size="48"
+                  class="white--text"
                 >
-                  <img v-if="winner.user.image" :src="winner.user.image">
-                  <v-icon v-else color="white">
-                    mdi-account-outline
-                  </v-icon>
+                  #{{ winner.num }}
                 </v-avatar>
               </v-btn>
             </v-col>
           </v-row>
+        </v-card-text>
+        <div v-if="self_winner.id">
+          <v-divider />
+          <v-card-actions>
+            <v-spacer />
+            <v-chip
+              v-for="(color, score) in colors"
+              :key="score"
+              dark
+              class="ml-1"
+              :outlined="score !== self_winner.score"
+              :color="color"
+              @click="setScore({ number_id: self_winner.id, score })"
+            >
+              {{ score }}
+            </v-chip>
+            <v-spacer />
+          </v-card-actions>
         </div>
-      </v-card-text>
+      </v-card>
     </div>
 
     <v-spacer />
@@ -156,16 +181,29 @@ import { mapState, mapActions } from 'vuex'
 export default {
   async fetch () {
     await this.fetchLot(this.$route.params.id)
-    // await this.$nuxt.$emit('drawer-open')
   },
   data: () => ({
     loading: false,
     colors: [
-      'indigo',
-      'warning',
-      'pink darken-2',
-      'red lighten-1',
-      'deep-purple accent-4'
+      /*
+      'red darken-4',
+      'red',
+      'red lighten-3',
+      'yellow lighten-2',
+      'yellow',
+      'yellow darken-2'
+       */
+      'light-blue lighten-3',
+      'light-blue lighten-2',
+      'light-blue lighten-1',
+      'light-blue',
+      'light-blue darken-1',
+      'light-blue darken-2',
+      'blue darken-2',
+      'light-blue darken-3',
+      'blue darken-3',
+      'light-blue darken-4',
+      'blue darken-4'
     ],
     slides: [
       'https://cdn.vuetifyjs.com/images/cards/cooking.png',
@@ -178,12 +216,16 @@ export default {
   computed: {
     ...mapState('lot', [
       'lot'
-    ])
+    ]),
+    self_winner () {
+      return this.$auth.loggedIn ? this.lot.wins.find(win => win.user.id === this.$auth.user.id) || {} : {}
+    }
   },
   methods: {
     ...mapActions('lot', [
       'reserve',
-      'fetchLot'
+      'fetchLot',
+      'setScore'
     ])
   }
 }

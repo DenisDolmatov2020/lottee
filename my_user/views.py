@@ -8,9 +8,6 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from my_user.serializers import UserSerializer
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser, FileUploadParser
-
-from winner.serializers import PrizeSerializer
 
 
 class UserCreateView(CreateAPIView):
@@ -40,10 +37,7 @@ class UserRetrieveUpdateView(RetrieveUpdateAPIView):
         user_numbers = Number.objects.filter(user=request.user)
         data_ = serializer.data
         data_['numbers'] = {number.lot_id: number.num for number in user_numbers}
-        # user wins
-        wins = PrizeSerializer(user_numbers.filter(won=True), many=True)
-        print(wins.data)
-        data_['wins'] = wins.data
+        data_['prize_count'] = user_numbers.filter(won=True).count()
         print('Total requests count: %s' % len(connection.queries))
         return Response(
             status=status.HTTP_200_OK,

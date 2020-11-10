@@ -71,9 +71,9 @@
       </v-tooltip>
 
       <v-badge
-        v-if="$auth.user.wins"
+        v-if="$auth.user.prize_count"
         color="pink lighten-1"
-        :content="String($auth.user.wins.length)"
+        :content="String($auth.user.prize_count)"
         bordered
         inline
         left

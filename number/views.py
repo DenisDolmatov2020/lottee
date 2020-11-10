@@ -10,7 +10,7 @@ from number.service import choose_winners
 from django.db import connection
 
 
-class NumberListUpdateView(UpdateAPIView):
+class NumberUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated | ReadOnly]
 
     def partial_update(self, request, *args, **kwargs):
