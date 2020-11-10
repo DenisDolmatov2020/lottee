@@ -13,22 +13,11 @@ export const mutations = {
   },
   SET_LOTS (state, lots) {
     state.lots = lots
-  },
-  SET_SCORE (state, number) {
-    state.lot.wins.find(win => win.id === number.id).score = number.score
   }
 }
 
 export const actions = {
-  async setScore({state, commit}, payload) {
-    const response = await this.$axios({
-      url: `/api/prize/${payload.number_id}`,
-      method: 'PATCH',
-      data: { score: payload.score },
-    })
-    commit('SET_SCORE', response.data)
-  },
-  async reserve({ state, commit, dispatch }) {
+  async reserve({ state }) {
     try {
       const response = await this.$axios({
         url: '/api/number/',
@@ -40,7 +29,6 @@ export const actions = {
       } else {
         $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
       }
-      // dispatch('fetchLot', this.$route.params.id)
       this.$auth.fetchUser()
     } catch (error) {
       $nuxt.$emit('snackbar', { icon: 'mdi-flash', color: 'error', text: 'Недостаточно энергии' })

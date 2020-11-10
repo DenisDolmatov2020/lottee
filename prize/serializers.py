@@ -8,5 +8,5 @@ class PrizeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Number
-        fields = ['id', 'lot', 'num', 'score']
+        fields = ['id', 'lot', 'num']
         read_only_fields = ('id', 'lot', 'num')

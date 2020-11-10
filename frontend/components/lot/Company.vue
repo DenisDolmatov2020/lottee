@@ -7,39 +7,27 @@
     width="calc(100% - 32px)"
     height="80px"
   >
-    <v-list-item-avatar
-      color="grey lighten-2"
-      class="ml-2 mt-1"
-    >
-      <v-img
-        v-if="company.image"
-        :src="company.image"
-      />
-      <v-icon v-else>
-        mdi-camera
-      </v-icon>
-    </v-list-item-avatar>
-    <v-rating
-      :value="3"
-      color="amber"
-      :background-color="'white'"
-      dense
-      half-increments
-      readonly
-      size="14"
-      class="float-right"
-      small
-    />
-    <v-row>
-      <span :class="`ml-4 white--text`">
-        {{ $auth.loggedIn && $auth.user.id === company.id ? 'Ваш лот' : company.name }}
-      </span>
-    </v-row>
-    <v-list-item
+    <v-card-title
       v-if="company"
       three-line
       class="mb-2"
-    />
+      :class="`mx-1 white--text`"
+    >
+      <v-list-item-avatar
+        color="grey lighten-2"
+        class="ml-1 mt-1"
+      >
+        <v-img
+          v-if="company.image"
+          :src="company.image"
+        />
+        <v-icon v-else>
+          mdi-camera
+        </v-icon>
+      </v-list-item-avatar>
+      <v-spacer />
+      {{ $auth.loggedIn && $auth.user.id === company.id ? 'Ваш лот' : company.name }}
+    </v-card-title>
   </v-card>
 </template>
 

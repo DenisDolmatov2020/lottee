@@ -95,7 +95,6 @@
       >
         <v-card-title class="deep-purple--text text-lighten-1">
           Победител{{ lot.wins.length === 1 ? 'ь' : 'и' }}
-          {{ lot.wins }}
           <v-spacer />
           <v-btn icon large>
             <v-icon color="deep-purple">
@@ -129,24 +128,6 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <div v-if="self_winner.id">
-          <v-divider />
-          <v-card-actions>
-            <v-spacer />
-            <v-chip
-              v-for="(color, score) in colors"
-              :key="score"
-              dark
-              class="ml-1"
-              :outlined="score !== self_winner.score"
-              :color="color"
-              @click="setScore({ number_id: self_winner.id, score })"
-            >
-              {{ score }}
-            </v-chip>
-            <v-spacer />
-          </v-card-actions>
-        </div>
       </v-card>
     </div>
 
