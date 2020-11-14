@@ -2,10 +2,13 @@
   <div v-if="lot.id && +lot.id === +$route.params.id">
     <Header :page="{ title: 'Лот', color: 'white', dark: false, update: false }" />
     <v-carousel
+      v-if="slides.length"
       cycle
       height="250"
       hide-delimiter-background
-      show-arrows-on-hover
+      :show-arrows="false"
+      :show-arrows-on-hover="false"
+      hide-delimiters
     >
       <v-carousel-item
         v-for="(slide, i) in slides"
@@ -13,7 +16,7 @@
       >
         <v-img
           height="250"
-          :src="slide"
+          :src="lot.image"
         />
       </v-carousel-item>
     </v-carousel>
@@ -89,15 +92,16 @@
     </v-card>
     <div v-else-if="!lot.active && lot.wins">
       <v-card
-        class="mx-auto my-2"
-        max-width="460"
+        class="mx-auto my-2 pb-2"
+        max-width="400"
         rounded="xl"
+        color="deep-purple lighten-1"
       >
-        <v-card-title class="deep-purple--text text-lighten-1">
+        <v-card-title class="white--text text-lighten-1">
           Победител{{ lot.wins.length === 1 ? 'ь' : 'и' }}
           <v-spacer />
-          <v-btn icon large>
-            <v-icon color="deep-purple">
+          <v-btn icon dark large>
+            <v-icon>
               mdi-comment-question
             </v-icon>
           </v-btn>
@@ -139,9 +143,9 @@
         dark
         color="blue lighten-1"
         block
-        @click="reserve"
+        @click="takeNumber"
       >
-        Резерв {{ lot.free_numbers }}
+        Взять номер
       </v-btn>
       <v-row v-else>
         <v-col cols="5" class="blue--text text--lighten-1">
@@ -197,17 +201,17 @@ export default {
   computed: {
     ...mapState('lot', [
       'lot'
-    ]),
-    self_winner () {
-      return this.$auth.loggedIn ? this.lot.wins.find(win => win.user.id === this.$auth.user.id) || {} : {}
-    }
+    ])
   },
   methods: {
     ...mapActions('lot', [
       'reserve',
-      'fetchLot',
-      'setScore'
-    ])
+      'fetchLot'
+    ]),
+    async takeNumber () {
+      await this.reserve()
+      this.$fetch()
+    }
   }
 }
 </script>

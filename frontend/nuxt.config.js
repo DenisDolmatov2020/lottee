@@ -15,7 +15,7 @@ export default {
     ]
   },
   server: {
-    port: 3000
+    port: process.env.CLIENT_PORT
     // host: '0.0.0.0'
   },
   target: 'server',
@@ -68,14 +68,14 @@ export default {
   },
   proxy: {
     '/api': {
-      target: 'http://127.0.0.1:8000/' + 'api',
+      target: process.env.SERVER_URL + 'api',
       secure: false,
       pathRewrite: {
         '^/api': '/'
       }
     },
     '/media': {
-      target: 'http://127.0.0.1:8000/' + 'media',
+      target: process.env.SERVER_URL + 'media',
       secure: false,
       pathRewrite: {
         '^/media': '/'

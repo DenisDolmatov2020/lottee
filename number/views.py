@@ -37,7 +37,7 @@ class NumberUpdateView(UpdateAPIView):
                     print('RESPONSE 2000 ', lot_number)
                     return Response(
                         status=status.HTTP_200_OK,
-                        data=lot_number.num
+                        data={'number': lot_number.num, 'active': lot_number.lot.active}
                     )
         # serializer = NumberSerializer(numbers, many=True)
         # print('Total requests count: %s' % len(connection.queries))

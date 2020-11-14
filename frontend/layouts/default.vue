@@ -1,6 +1,6 @@
 <template>
   <v-app id="main" :style="{background: $vuetify.theme.themes[theme].background}">
-    <Logo />
+    <Logo @click="clickLogo" />
     <Speed />
     <v-row>
       <v-col
@@ -38,9 +38,7 @@ export default {
     drawer () {
       return this.$route.path !== '/'
     },
-    ...mapState('lot', [
-      'lots'
-    ]),
+    ...mapState('lot', ['lots']),
     theme () {
       return (this.$vuetify.theme.dark) ? 'dark' : 'light'
     }
@@ -78,7 +76,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('lot', ['fetchLots'])
+    ...mapActions('lot', ['fetchLots']),
+    clickLogo () {
+      this.$router.push('/')
+      this.fetchLots()
+    }
   }
   /*
   beforeDestroy () {

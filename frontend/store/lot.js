@@ -25,7 +25,7 @@ export const actions = {
         data: { lot_id: state.lot.id }
       })
       if (response.status === 200) {
-        $nuxt.$emit('snackbar', { text: `Ваш номер #${response.data}` })
+        $nuxt.$emit('snackbar', { text: `Ваш номер #${JSON.stringify(response.data)}` })
       } else {
         $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
       }
