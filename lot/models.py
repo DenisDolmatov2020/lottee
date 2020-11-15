@@ -12,8 +12,11 @@ class Lot(models.Model):
     energy = models.PositiveSmallIntegerField(verbose_name='Затрата энергии', default=1)
     created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(verbose_name='Дата изменений', auto_now_add=False, auto_now=True)
-    winners_complete = models.DateTimeField(null=True)
+
     active = models.BooleanField(verbose_name='Активность игры', default=True, blank=True)
+
+    def __str__(self):
+        return "ID #{0} )   {1}".format(self.id, self.title)
 
 
 class Condition(models.Model):
