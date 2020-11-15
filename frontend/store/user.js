@@ -11,6 +11,7 @@ export const actions = {
       if (response.status === 201) await dispatch('login', user)
       else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
     } catch (error) {
+      console.log('ERROR REGISBTRATION ' + JSON.stringify(error))
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при регистрации' })
     }
   },

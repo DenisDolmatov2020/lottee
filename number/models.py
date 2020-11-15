@@ -22,7 +22,6 @@ class Number(models.Model):
     num = models.PositiveSmallIntegerField(verbose_name='Number', default=1, blank=True)
 
     won = models.BooleanField(verbose_name='winner', default=False)
-    score = models.PositiveSmallIntegerField(verbose_name='Score for prize', null=True)
 
     created = models.DateTimeField(verbose_name='Date create', auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(verbose_name='Date update', auto_now_add=False, auto_now=True)

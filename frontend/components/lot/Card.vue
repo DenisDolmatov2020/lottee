@@ -5,7 +5,7 @@
         class="my-12 mx-auto"
         width="400"
         :elevation="hover ? 24 : 3"
-        @click="$router.push(`/lot/${lot.id}`)"
+        @click="$router.push({ name: `id`, params: {id: lot.id}})"
       >
         <Company :company="lot.user" />
         <v-card-text class="pt-0">
@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 
 export default {
   name: 'Card',
@@ -60,11 +59,6 @@ export default {
       type: Object,
       default: () => ({})
     }
-  },
-  methods: {
-    ...mapActions('lot', [
-      'fetchLot'
-    ])
   }
 }
 </script>

@@ -20,6 +20,9 @@
       mdi-table-account
     </v-icon>
     <span class="subheading font-weight-bold green--text">
+      <span v-if="lot.free_numbers">
+        {{ lot.free_numbers }}/
+      </span>
       {{ lot.players }}
     </span>
   </v-row>

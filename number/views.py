@@ -33,10 +33,12 @@ class NumberUpdateView(UpdateAPIView):
                     lot_number.save(update_fields=['user'])
                     if len(lot_numbers_free) <= 1 and lot_number.lot.active:
                         choose_winners(lot_number.lot)
-
-                    print('RESPONSE 2000 ', lot_number)
                     return Response(
                         status=status.HTTP_200_OK,
-                        data={'number': lot_number.num, 'active': lot_number.lot.active}
+                        data=lot_number.num
                     )
-        return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                print('NO HAVE FREE')
+        else:
+            print('USER HAVE NUMBER')
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
