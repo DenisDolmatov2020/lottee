@@ -38,7 +38,7 @@ export default {
 .logo-button {
   width: 160px;
   height: 73px;
-  z-index: 1;
+  z-index: 7;
   position: fixed;
   cursor: pointer;
   outline: none;

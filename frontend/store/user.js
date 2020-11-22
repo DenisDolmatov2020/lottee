@@ -21,6 +21,7 @@ export const actions = {
         data: user
       })
       $nuxt.$emit('snackbar', { color: 'success', text: 'ВХОД ВЫПОЛНЕН' })
+      dispatch('track/trackerTimer', null, { root: true })
       await $nuxt.$emit('drawer-close')
     } catch (error) {
       let text = 'Ошибка при входе'

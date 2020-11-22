@@ -164,7 +164,6 @@
 import { mapState, mapActions } from 'vuex'
 export default {
   async fetch () {
-    console.log('$FETCH()')
     await this.fetchLot(this.$route.params.id)
   },
   data: () => ({
@@ -199,15 +198,10 @@ export default {
     ]
   }),
   computed: {
-    ...mapState('lot', [
-      'lot'
-    ])
+    ...mapState('lot', ['lot'])
   },
   methods: {
-    ...mapActions('lot', [
-      'reserve',
-      'fetchLot'
-    ]),
+    ...mapActions('lot', ['reserve', 'fetchLot']),
     async takeNumber () {
       await this.reserve()
     }

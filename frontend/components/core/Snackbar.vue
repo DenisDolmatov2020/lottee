@@ -6,10 +6,17 @@
       :timeout="timeout"
       shaped
     >
-      <v-icon large class="mr-2">
-        {{ icon }}
-      </v-icon>
-      {{ text }}
+      <v-list-item>
+        <v-icon large class="mr-2">
+          {{ icon }}
+        </v-icon>
+        <v-list-item-content>
+          <v-list-item-title class="headline mb-1">
+            {{ title }}
+          </v-list-item-title>
+          <span class="text-style"> {{ text }} </span>
+        </v-list-item-content>
+      </v-list-item>
 
       <template v-slot:action="{ attrs }">
         <v-btn
@@ -45,6 +52,7 @@ export default {
     icon: '',
     timeout: null,
     color: '',
+    title: '',
     text: '',
     lot_id: null
   }),
@@ -53,6 +61,7 @@ export default {
       this.icon = payload.icon || 'mdi-check-box-multiple-outline'
       this.timeout = payload.timeout || 3500
       this.color = payload.color || 'primary'
+      this.title = payload.title || ''
       this.text = payload.text || ''
       this.lot_id = payload.lot_id || null
       this.snackbar = true
@@ -62,5 +71,7 @@ export default {
 </script>
 
 <style scoped>
-
+.text-style {
+  color: rgba(255, 255, 255, 0.7);
+}
 </style>

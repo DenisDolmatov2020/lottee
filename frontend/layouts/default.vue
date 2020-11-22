@@ -44,7 +44,17 @@ export default {
     }
   },
   mounted () {
-    /*
+    if (this.$auth.loggedIn) {
+      this.trackerTimer()
+    }
+  },
+  methods: {
+    ...mapActions('lot', ['fetchLots']),
+    ...mapActions('track', ['trackerTimer'])
+  }
+  /*
+  mounted () {
+
     const prizeSocket = new WebSocket('ws://127.0.0.1:8000/ws/prize/')
     console.log(prizeSocket)
     prizeSocket.onopen = () => {
@@ -75,11 +85,9 @@ export default {
         }, 10000)
       }
     }
-    */
+
   },
-  methods: {
-    ...mapActions('lot', ['fetchLots'])
-  }
+  */
   /*
   beforeDestroy () {
     this.prizeSocket.onclose = (e) => {
@@ -94,7 +102,7 @@ export default {
         text: 'INOUT MESSI', user: 3
       }))
     }
-  }
+  },
   */
 }
 </script>
