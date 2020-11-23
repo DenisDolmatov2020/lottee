@@ -136,16 +136,15 @@
     </div>
     <v-spacer />
     <v-divider class="mx-4" />
-    <v-btn
+    <div
       v-if="$auth.loggedIn && lot.user.id !== $auth.user.id && !$auth.user.numbers[lot.id] && lot.active"
-      dark
-      color="blue lighten-1"
-      style="position: absolute; bottom: 10px;"
-      block
+      type="button"
+      class="btn btn-entry"
+      style="position: absolute; bottom: 10px; left: 5%; width: 90%;"
       @click="takeNumber"
     >
       Взять номер
-    </v-btn>
+    </div>
     <v-row v-else>
       <v-col cols="5" class="blue--text text--lighten-1 ml-4">
         {{ $auth.loggedIn && $auth.user.numbers[lot.id] ? `Ваш номер #${$auth.user.numbers[lot.id]}` : '' }}
