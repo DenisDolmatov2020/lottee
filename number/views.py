@@ -41,4 +41,5 @@ class NumberUpdateView(UpdateAPIView):
                 print('NO HAVE FREE')
         else:
             print('USER HAVE NUMBER')
+        print('405405405')
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

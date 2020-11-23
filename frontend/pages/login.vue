@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header :page="{ title: 'Логин', color: 'blue', dark: true, update: false }" />
+    <Header :page="{ title: 'Логин', color: '#333', dark: true, update: false }" />
 
     <div class="user-container">
       <div class="content-w3ls">
@@ -229,8 +229,8 @@ body {
 
 .content-bottom {
   padding: 3em 4em;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 1px 1px 1px 0px;
+  background: #333;  /* rgba(0, 0, 0, 0.4); */
+  border-radius: 1px 1px 1px 0;
   margin: 0 1em;
   box-shadow: 12px 12px rgba(0, 0, 0, 0.6);
   -webkit-box-shadow: 12px 12px rgba(0, 0, 0, 0.6);

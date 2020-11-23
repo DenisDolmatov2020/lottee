@@ -77,6 +77,7 @@ export const actions = {
       }
     } catch (error) {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })
+      this.$router.push('/')
     }
   },
   async fetchLots ({ state, commit }) {

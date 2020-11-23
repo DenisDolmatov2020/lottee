@@ -134,6 +134,27 @@
         </v-card-text>
       </v-card>
     </div>
+    <v-spacer />
+    <v-divider class="mx-4" />
+    <v-btn
+      v-if="$auth.loggedIn && lot.user.id !== $auth.user.id && !$auth.user.numbers[lot.id] && lot.active"
+      dark
+      color="blue lighten-1"
+      style="position: absolute; bottom: 10px;"
+      block
+      @click="takeNumber"
+    >
+      Взять номер
+    </v-btn>
+    <v-row v-else>
+      <v-col cols="5" class="blue--text text--lighten-1 ml-4">
+        {{ $auth.loggedIn && $auth.user.numbers[lot.id] ? `Ваш номер #${$auth.user.numbers[lot.id]}` : '' }}
+      </v-col>
+      <v-spacer />
+      <v-col :class="lot.active ? 'success--text' : 'error--text'">
+        {{ lot.active ? `Свободно ${lot.free_numbers}` : 'Лот завершен' }}
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -141,7 +162,6 @@
 import { mapState, mapActions } from 'vuex'
 export default {
   async fetch () {
-    console.log(`PARAM ID ${this.$route.params.id}`)
     await this.fetchLot(this.$route.params.id)
   },
   data: () => ({
@@ -166,20 +186,16 @@ export default {
       'blue darken-3',
       'light-blue darken-4',
       'blue darken-4'
-    ],
-    slides: [
-      'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-      'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-      'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-      'https://cdn.vuetifyjs.com/images/cards/cooking.png',
-      'https://cdn.vuetifyjs.com/images/cards/cooking.png'
     ]
   }),
   computed: {
     ...mapState('lot', ['lot'])
   },
   methods: {
-    ...mapActions('lot', ['fetchLot'])
+    ...mapActions('lot', ['reserve', 'fetchLot']),
+    async takeNumber () {
+      await this.reserve()
+    }
   }
 }
 </script>

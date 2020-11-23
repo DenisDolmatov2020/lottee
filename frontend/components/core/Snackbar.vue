@@ -58,7 +58,7 @@ export default {
   }),
   created () {
     this.$nuxt.$on('snackbar', (payload) => {
-      this.icon = payload.icon || payload.color === 'success' ? 'mdi-check-box-multiple-outline' : 'mdi-tooltip-remove-outline'
+      this.icon = payload.icon || payload.color === 'error' ? 'mdi-tooltip-remove-outline' : 'mdi-check-box-multiple-outline'
       this.timeout = payload.timeout || 3500
       this.color = payload.color || 'primary'
       this.title = payload.title || ''
