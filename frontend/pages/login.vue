@@ -4,7 +4,7 @@
 
     <div class="user-container">
       <div class="content-w3ls">
-        <div class="content-bottom">
+        <form class="content-bottom">
           <div
             v-if="$route.query.message"
             class="login-first"
@@ -39,9 +39,7 @@
               >
             </div>
           </div>
-          <div
-            class="field-group"
-          >
+          <div class="field-group">
             <img
               alt="email icon"
               class="icon-field"
@@ -71,6 +69,7 @@
                 v-model="password"
                 name="password"
                 :type="showPassword ? 'text' : 'password'"
+                autocomplete="on"
                 placeholder="Пароль"
               >
             </div>
@@ -90,6 +89,7 @@
                 v-model="password_repeat"
                 name="password-repeat"
                 :type="showPassword ? 'text' : 'password'"
+                autocomplete="on"
                 placeholder="Повтор пароля"
               >
             </div>
@@ -105,6 +105,7 @@
           </div>
 
           <div
+            type="button"
             class="btn btn-entry"
             @click="login"
           >
@@ -113,7 +114,7 @@
           <div v-if="log" class="forgot-password">
             забыли пароль?
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -522,7 +523,7 @@ input:checked+.slider:before {
   }
   .copyright p {
     padding:0 1em 2em;
-    letter-spacing: 0px;
+    letter-spacing: 0;
   }
 }
 @media screen and (max-width: 320px) {

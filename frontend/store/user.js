@@ -5,14 +5,16 @@ export const actions = {
     try {
       const response = await this.$axios({
         url: '/api/my-user/create/',
-        data: user,
-        method: 'POST'
+        method: 'POST',
+        data: user
       })
       if (response.status === 201) await dispatch('login', user)
       else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
     } catch (error) {
-      console.log('ERROR REGISBTRATION ' + JSON.stringify(error))
-      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при регистрации' })
+      console.log('ERROR REGISTRATION ' + JSON.stringify(error))
+      $nuxt.$emit('snackbar',
+        { color: 'error', icon: 'mdi-list-status', text: 'Эта почта уже зарегистрирована попробуйте войти' }
+      )
     }
   },
   async login ({ commit, dispatch }, user) {
@@ -63,6 +65,7 @@ export const actions = {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при обновлении профиля' })
     }
   },
+  /*
   async profile ({ commit }) {
     try {
       const response = await this.$axios({
@@ -79,9 +82,10 @@ export const actions = {
       console.log('auth_error_login_action', error)
     }
   },
+  */
   async logout () {
     await this.$auth.logout()
     this.$router.push('/login')
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
-  },
+  }
 }

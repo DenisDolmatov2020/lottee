@@ -20,6 +20,7 @@ class UserCreateView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
+        print(3)
         return Response(
             {'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
             status=status.HTTP_201_CREATED

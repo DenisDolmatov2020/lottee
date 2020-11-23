@@ -6,7 +6,7 @@ class Lot(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, related_name='user', on_delete=models.CASCADE)
     title = models.CharField(verbose_name='Название', max_length=48)
     description = models.CharField(verbose_name='Описание', max_length=160, blank=True, null=True)
-    image = models.ImageField(verbose_name='Основное изображение', upload_to='lot/', blank=True, null=True)
+    # image = models.ImageField(verbose_name='Основное изображение', upload_to='lot/', blank=True, null=True)
     players = models.PositiveSmallIntegerField(verbose_name='Кол-во участников', default=3)
     winners = models.PositiveSmallIntegerField(verbose_name='Кол-во победилей', default=1, blank=True)
     energy = models.PositiveSmallIntegerField(verbose_name='Затрата энергии', default=1)
@@ -17,6 +17,11 @@ class Lot(models.Model):
 
     def __str__(self):
         return "ID #{0} )   {1}".format(self.id, self.title)
+
+
+class Image(models.Model):
+    url = models.ImageField(upload_to='lot/')
+    lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name='images')
 
 
 class Condition(models.Model):

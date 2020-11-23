@@ -69,8 +69,8 @@ export const actions = {
     try {
       const response = await this.$axios({
         url: state.url + lot_id,
-        headers: { Authorization: '' },
-        method: 'GET'
+        method: 'GET',
+        headers: { Authorization: '' }
       })
       if (response.status === 200) {
         await commit('SET_LOT', response.data)

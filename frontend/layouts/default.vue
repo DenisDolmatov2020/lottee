@@ -106,3 +106,8 @@ export default {
   */
 }
 </script>
+<style>
+#app, html, body {
+  font-family: cursive;
+}
+</style>

@@ -154,6 +154,7 @@ export default {
 <style scoped>
   /* This is for documentation purposes and will not be needed in your application */
   .btn-no-auth {
+    position: absolute;
     z-index: 1;
     top: 16px;
     right: 16px;

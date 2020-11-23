@@ -2,7 +2,7 @@
   <div v-if="lot.id && +lot.id === +$route.params.id">
     <Header :page="{ title: 'Лот', color: 'white', dark: false, update: false }" />
     <v-carousel
-      v-if="slides.length"
+      v-if="lot.images.length"
       cycle
       height="250"
       hide-delimiter-background
@@ -11,12 +11,12 @@
       hide-delimiters
     >
       <v-carousel-item
-        v-for="(slide, i) in slides"
+        v-for="(image, i) in lot.images"
         :key="i"
       >
         <v-img
           height="250"
-          :src="lot.image"
+          :src="image.url"
         />
       </v-carousel-item>
     </v-carousel>
@@ -134,29 +134,6 @@
         </v-card-text>
       </v-card>
     </div>
-
-    <v-spacer />
-    <v-divider class="mx-4" />
-    <v-card-actions class="mx-2">
-      <v-btn
-        v-if="$auth.loggedIn && lot.user.id !== $auth.user.id && !$auth.user.numbers[lot.id] && lot.active"
-        dark
-        color="blue lighten-1"
-        block
-        @click="takeNumber"
-      >
-        Взять номер
-      </v-btn>
-      <v-row v-else>
-        <v-col cols="5" class="blue--text text--lighten-1">
-          {{ $auth.loggedIn && $auth.user.numbers[lot.id] ? `Ваш номер #${$auth.user.numbers[lot.id]}` : '' }}
-        </v-col>
-        <v-spacer />
-        <v-col :class="lot.active ? 'success--text' : 'error--text'">
-          {{ lot.active ? `Свободно ${lot.free_numbers}` : 'Лот завершен' }}
-        </v-col>
-      </v-row>
-    </v-card-actions>
   </div>
 </template>
 
@@ -164,6 +141,7 @@
 import { mapState, mapActions } from 'vuex'
 export default {
   async fetch () {
+    console.log(`PARAM ID ${this.$route.params.id}`)
     await this.fetchLot(this.$route.params.id)
   },
   data: () => ({
@@ -201,10 +179,7 @@ export default {
     ...mapState('lot', ['lot'])
   },
   methods: {
-    ...mapActions('lot', ['reserve', 'fetchLot']),
-    async takeNumber () {
-      await this.reserve()
-    }
+    ...mapActions('lot', ['fetchLot'])
   }
 }
 </script>

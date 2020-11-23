@@ -14,9 +14,10 @@
   color: white;
   transition: .25s ease-in-out;
 }
-.btn-entry {
+.btn.btn-entry {
   width: 100%;
   padding: 10px;
+  color: #f0f0f0;
   box-shadow: 0 0 40px 40px dodgerblue inset, 0 0 0 0 dodgerblue;
 }
 .btn-entry:hover {
@@ -35,7 +36,6 @@
   padding: 1em 0;
 }
 
-.box-field {}
 .box-field input {
   background-color: #424242;
   padding: 10px;

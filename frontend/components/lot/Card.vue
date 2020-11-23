@@ -15,7 +15,6 @@
                 class="headline"
                 v-text="lot.title"
               />
-
               <v-card-subtitle
                 class="subheading font-weight-light grey--text"
                 v-text="lot.description"
@@ -28,7 +27,7 @@
               tile
               color="grey lighten-1"
             >
-              <v-img v-if="lot.image" :src="lot.image" />
+              <v-img v-if="lot.images.length" :src="lot.images[0].url" />
               <v-icon v-else>
                 mdi-camera
               </v-icon>

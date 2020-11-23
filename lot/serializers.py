@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from lot.models import Lot, Condition
+from lot.models import Lot, Image, Condition
 from my_user.models import User
 from my_user.serializers import UserSerializer
 from number.serializers import NumberSerializer
@@ -12,8 +12,15 @@ class ConditionSerializer(serializers.ModelSerializer):
         read_only_fields = ('lot',)
 
 
+class LotImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ['url']
+        read_only_fields = ('lot',)
+
+
 class LotSerializer(serializers.ModelSerializer):
-    # conditions = ConditionSerializer(many=True, required=False)
+    images = LotImageSerializer(many=True, required=False)
     user = UserSerializer(read_only=True)
     user_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),

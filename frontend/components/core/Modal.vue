@@ -112,16 +112,6 @@ export default {
       'update'
     ])
   }
-  /* computed: {
-    user: {
-      get () {
-        return this.$store.state.a
-      },
-      set (value) {
-        this.$store.commit('updateA', value)
-      }
-    }
-  } */
 }
 </script>
 

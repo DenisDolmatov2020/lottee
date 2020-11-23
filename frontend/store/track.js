@@ -11,7 +11,7 @@ export const mutations = {
 
 export const actions = {
   trackerTimer ({ dispatch }) {
-    setInterval(() => { dispatch('tracker') }, 5000)
+    setInterval(() => { dispatch('tracker') }, 60 * 60 * 1000) // каждый час
   },
   tracker ({ commit }) {
     if (this.$auth.loggedIn) {
@@ -23,7 +23,7 @@ export const actions = {
               color: 'indigo',
               icon: 'mdi-flash',
               title: `+${response.data.days_row < 8 ? response.data.days_row : 7} к энергии`,
-              timeout: 7000,
+              timeout: 5000,
               text: `Получен ежедневный бонус за
                       ${response.data.days_row}
                       ${response.data.days_row === 1 ? 'день' : response.data.days_row < 5 ? 'дня' : 'дней'}
