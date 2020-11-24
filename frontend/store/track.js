@@ -32,9 +32,7 @@ export const actions = {
             this.$auth.fetchUser()
           }
         })
-        .catch((error) => {
-          console.log(error)
-        })
+        .catch((error) => { console.error(error) })
     }
   }
 }

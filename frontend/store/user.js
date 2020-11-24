@@ -11,7 +11,7 @@ export const actions = {
       if (response.status === 201) await dispatch('login', user)
       else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
     } catch (error) {
-      console.log('ERROR REGISTRATION ' + JSON.stringify(error))
+      console.error('ERROR REGISTRATION ' + JSON.stringify(error))
       $nuxt.$emit('snackbar',
         { color: 'error', icon: 'mdi-list-status', text: 'Эта почта уже зарегистрирована попробуйте войти' }
       )
@@ -19,9 +19,7 @@ export const actions = {
   },
   async login ({ commit, dispatch }, user) {
     try {
-      await this.$auth.loginWith('local', {
-        data: user
-      })
+      await this.$auth.loginWith('local', { data: user})
       $nuxt.$emit('snackbar', { color: 'success', text: 'ВХОД ВЫПОЛНЕН' })
       dispatch('track/trackerTimer', null, { root: true })
       await $nuxt.$emit('drawer-close')
@@ -32,6 +30,15 @@ export const actions = {
       }
       $nuxt.$emit('snackbar', { color: 'error', text })
     }
+  },
+  async reset ({ commit, dispatch }, user) {
+    await this.$axios.post('/api/my-user/password_reset/', user)
+      .then(() => {
+        $nuxt.$emit('snackbar', { color: 'success', text: 'Инструкция сброса отравлена на почту' })
+        $nuxt.$emit('drawer-close')
+      })
+      .catch(() => { $nuxt.$emit('snackbar', { color: 'error', text: 'Нет пользователя с таким адресом' })})
+
   },
   async update ({ state, dispatch }, user) {
     const formData = new FormData()
@@ -61,7 +68,7 @@ export const actions = {
     } catch (error) {
       console.log('STATUS in error: ' + JSON.stringify(error.response.status))
       console.log('STATUS in error response: ' + JSON.stringify(error.response))
-      console.log('Error: ', error)
+      console.error(error)
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при обновлении профиля' })
     }
   },

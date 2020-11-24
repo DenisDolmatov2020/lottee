@@ -13,14 +13,17 @@
           </div>
           <div class="form-buttons">
             <h2>
-              {{ log ? 'Логин' : 'Регистрация' }}
+              {{ pages[page].name }}
             </h2>
-            <h5 @click="log = !log">
-              {{ log ? 'Регистрация' : 'Логин' }}
+            <h5
+              v-if="page !== 2"
+              @click="page = pages[page].extra"
+            >
+              {{ pages[pages[page].extra].name }}
             </h5>
           </div>
           <div
-            v-if="!log"
+            v-if="!page"
             class="field-group"
           >
             <img
@@ -57,7 +60,10 @@
               >
             </div>
           </div>
-          <div class="field-group">
+          <div
+            v-if="page !== 2"
+            class="field-group"
+          >
             <img
               alt="lock icon"
               class="icon-field"
@@ -75,7 +81,7 @@
             </div>
           </div>
           <div
-            v-if="!log"
+            v-if="!page"
             class="field-group"
           >
             <img
@@ -94,7 +100,10 @@
               >
             </div>
           </div>
-          <div class="field-group-2">
+          <div
+            v-if="page !== 2"
+            class="field-group-2"
+          >
             <div class="switch-agileits">
               <label class="switch">
                 <input v-model="showPassword" type="checkbox">
@@ -109,10 +118,30 @@
             class="btn btn-entry"
             @click="login"
           >
-            {{ log ? 'Войти' : 'Создать' }}
+            {{ pages[page].button }}
           </div>
-          <div v-if="log" class="forgot-password">
-            забыли пароль?
+          <div class="pages-bottom">
+            <div
+              v-if="page !== 2"
+              class="forgot-password"
+              @click="page = 2"
+            >
+              забыли пароль?
+            </div>
+            <div
+              v-else
+              class="forgot-password"
+              @click="page = 0"
+            >
+              Зарегистрироваться
+            </div>
+            <div
+              v-if="page !== 1"
+              class="forgot-password"
+              @click="page = 1"
+            >
+              Войти
+            </div>
           </div>
         </form>
       </div>
@@ -125,7 +154,12 @@ export default {
   name: 'Login',
   data () {
     return {
-      log: true,
+      page: 0,
+      pages: [
+        { name: 'Регистрация', name_eng: 'register', button: 'Создать', extra: 1 },
+        { name: 'Логин', name_eng: 'login', button: 'Войти', extra: 0 },
+        { name: 'Сброс пароля', name_eng: 'reset', button: 'Сбросить', extra: 0 }
+      ],
       showPassword: false,
       username: '',
       email: '',
@@ -135,15 +169,11 @@ export default {
   },
   methods: {
     async login () {
-      if (this.log) {
-        await this.$store.dispatch('user/login', { email: this.email, password: this.password })
-      } else {
-        await this.$store.dispatch('user/register', {
-          name: this.username,
-          email: this.email,
-          password: this.password
-        })
-      }
+      await this.$store.dispatch(`user/${this.pages[this.page].name_eng}`, {
+        name: this.username,
+        email: this.email,
+        password: this.password
+      })
     }
   }
 }
@@ -174,7 +204,12 @@ export default {
   background-size: cover;
   padding: 100px 0 180px 0;
 }
+.pages-bottom {
+  display: flex;
+  justify-content: space-between;
+}
 .forgot-password {
+  cursor: pointer;
   margin-top: 1em;
   color: #81D4FA;
 }
@@ -228,6 +263,7 @@ body {
 }
 
 .content-bottom {
+  min-height: 25em;
   padding: 3em 4em;
   background: #333;  /* rgba(0, 0, 0, 0.4); */
   border-radius: 1px 1px 1px 0;

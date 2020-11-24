@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'django_rest_passwordreset',
+    'subscribe',
     'channels',
     'my_user',
     'lot',
@@ -136,6 +138,14 @@ REST_FRAMEWORK = {
 }
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'denisdolmatov2020@gmail.com'
+EMAIL_HOST_PASSWORD = 'DenVik37ww10005000'
 
 LANGUAGE_CODE = 'en-us'
 

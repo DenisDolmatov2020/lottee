@@ -65,7 +65,6 @@ export const actions = {
     }
   },
   async fetchLot ({ state, commit }, lot_id) {
-    console.log('FETCH LOT DISPATCH ' + lot_id)
     try {
       const response = await this.$axios({
         url: state.url + lot_id,
@@ -81,21 +80,12 @@ export const actions = {
     }
   },
   async fetchLots ({ state, commit }) {
-    try {
-      const response = await this.$axios({
-        url: state.url,
-        headers: { Authorization: '' },
-        method: 'GET'
-      })
-      if (response.status === 200) {
-        commit('SET_LOTS', response.data)
-      }
-    } catch (error) {
-      console.log(error)
-      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лотов' })
-    }
+      await this.$axios.get(state.url)
+        .then((response) => commit('SET_LOTS', response.data))
+        .catch ((error) => {console.error(error)})
   }
 }
+
 
 export const getters = {
   lot: s => s.lot

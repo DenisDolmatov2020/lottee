@@ -77,7 +77,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .left-item {
   margin-left: -15px;
   margin-right: 15px;
