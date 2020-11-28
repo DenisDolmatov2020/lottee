@@ -34,11 +34,33 @@ export const actions = {
   async reset ({ commit, dispatch }, user) {
     await this.$axios.post('/api/my-user/password_reset/', user)
       .then(() => {
-        $nuxt.$emit('snackbar', { color: 'success', text: 'Инструкция сброса отравлена на почту' })
-        $nuxt.$emit('drawer-close')
+        $nuxt.$emit('snackbar', { color: 'primary', text: 'Инструкция сброса отравлена на почту' })
+        this.$router.push('/')
       })
       .catch(() => { $nuxt.$emit('snackbar', { color: 'error', text: 'Нет пользователя с таким адресом' })})
-
+  },
+  async confirm ({ commit, dispatch }, user) {
+    await this.$axios.post('/api/my-user/password_reset/confirm/', user)
+      .then(() => {
+        $nuxt.$emit('snackbar', { color: 'success', text: 'Новый пароль сохранен' })
+        this.$router.push('/')
+      })
+      .catch(() => {
+        $nuxt.$emit('snackbar', { color: 'error', text: 'Токен устарел, попробуйте заново' })
+        this.$router.push('/')
+      })
+  },
+  async valid ({ commit, dispatch }, user) {
+    console.log('V')
+    await this.$axios.post('/api/my-user/password_reset/validate_token/', user)
+      .then(async (response) => {
+        await console.log(response)
+      })
+      .catch(async (error) => {
+        // await console.error(error)
+        await this.$router.push('/')
+        console.log('C')
+      })
   },
   async update ({ state, dispatch }, user) {
     const formData = new FormData()
@@ -49,8 +71,8 @@ export const actions = {
         console.log(key + ':' + JSON.stringify(user[key]))
         console.log(typeof user[key])
       }
-    });
-    formData.getAll('image');
+    })
+    formData.getAll('image')
     try {
       const response = await this.$axios.patch(
         '/api/my-user/', formData,

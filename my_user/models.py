@@ -18,8 +18,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
                                                    reset_password_token.key)
 
     html_message = render_to_string('my_user/reset_form.html', {
-        'link': 'http://127.0.0.1:3000/login?token={}{}'.format(reverse('password_reset:reset-password-request'),
-                                                   reset_password_token.key)
+        'link': 'http://127.0.0.1:3000/login?page=3&token={}'.format(reset_password_token.key)
     })
     send_mail(
         # title:
