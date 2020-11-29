@@ -1,12 +1,10 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
 from django.dispatch import receiver
-from django.urls import reverse
+from django.db.models.signals import pre_save
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail
-
 from lottee.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
 
@@ -88,3 +86,13 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+@receiver(pre_save, sender=User)
+def set_new_user_inactive(sender, instance, **kwargs):
+    if instance._state.adding is True:
+        print("Creating Inactive User")
+        instance.is_active = False
+    else:
+        print("Updating User Record")
+

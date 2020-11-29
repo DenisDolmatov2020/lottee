@@ -47,7 +47,7 @@ export const actions = {
       })
       .catch(() => {
         this.$router.replace('/login?page=2')
-        $nuxt.$emit('snackbar', { color: 'error', text: 'Токен устарел, попробуйте заново' })
+        $nuxt.$emit('snackbar', { color: 'error', timeout: 7000, text: 'Токен устарел, попробуйте заново' })
       })
   },
   async update ({ state, dispatch }, user) {
