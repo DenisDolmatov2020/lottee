@@ -46,20 +46,8 @@ export const actions = {
         this.$router.push('/')
       })
       .catch(() => {
+        this.$router.replace('/login?page=2')
         $nuxt.$emit('snackbar', { color: 'error', text: 'Токен устарел, попробуйте заново' })
-        this.$router.push('/')
-      })
-  },
-  async valid ({ commit, dispatch }, user) {
-    console.log('V')
-    await this.$axios.post('/api/my-user/password_reset/validate_token/', user)
-      .then(async (response) => {
-        await console.log(response)
-      })
-      .catch(async (error) => {
-        // await console.error(error)
-        await this.$router.push('/')
-        console.log('C')
       })
   },
   async update ({ state, dispatch }, user) {
@@ -68,8 +56,6 @@ export const actions = {
     keys.forEach(key => {
       if (key !== 'image' || key === 'image' && user[key] && typeof user[key] === 'object') {
         formData.append(key, user[key])
-        console.log(key + ':' + JSON.stringify(user[key]))
-        console.log(typeof user[key])
       }
     })
     formData.getAll('image')
@@ -81,37 +67,14 @@ export const actions = {
             'Content-Type': 'multipart/form-data'
           }
         })
-      console.log('Success: ' + JSON.stringify(response.data))
       if (response.status === 200) {
         $nuxt.$emit('snackbar', { color: 'success', text: 'Изменения профиля сохранены' })
         await this.$auth.fetchUser()
       }
-      console.log('STATUS: ' + JSON.stringify(response.status))
     } catch (error) {
-      console.log('STATUS in error: ' + JSON.stringify(error.response.status))
-      console.log('STATUS in error response: ' + JSON.stringify(error.response))
-      console.error(error)
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при обновлении профиля' })
     }
   },
-  /*
-  async profile ({ commit }) {
-    try {
-      const response = await this.$axios({
-        url: '/api/my-user/profile/',
-        method: 'GET'
-      })
-      await console.log( `Response status : ${ JSON.stringify(response) }` )
-      localStorage.user = await JSON.stringify(response.data)
-      console.log(JSON.stringify(response.data.user))
-      await commit('SET_USER', response.data.user)
-      await commit('SET_NUMBERS', response.data.numbers)
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('auth_error_login_action', error)
-    }
-  },
-  */
   async logout () {
     await this.$auth.logout()
     this.$router.push('/login')

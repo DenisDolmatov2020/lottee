@@ -14,7 +14,7 @@
         <Card :lot="lot" />
       </v-col>
     </v-row>
-    <Drawer v-if="$route.path !== '/'" />
+    <Drawer v-if="drawer" />
     <Snackbar />
   </v-app>
 </template>

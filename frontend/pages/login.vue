@@ -17,7 +17,7 @@
             </h2>
             <h5
               v-if="page < 2"
-              @click="page = pages[page].extra"
+              @click="switchPage(pages[page].extra)"
             >
               {{ pages[pages[page].extra].name }}
             </h5>
@@ -127,21 +127,21 @@
             <div
               v-if="page < 2"
               class="forgot-password"
-              @click="page = 2"
+              @click="switchPage(2)"
             >
               забыли пароль?
             </div>
             <div
               v-else
               class="forgot-password"
-              @click="page = 0"
+              @click="switchPage(0)"
             >
               Зарегистрироваться
             </div>
             <div
               v-if="page !== 1"
               class="forgot-password"
-              @click="page = 1"
+              @click="switchPage(1)"
             >
               Войти
             </div>
@@ -158,21 +158,41 @@ export default {
   /*
   async fetch () {
     if (+this.$route.query.page === 3) {
-      console.log('created 3')
       if (this.$route.query.token) {
         console.log('created Token')
         await this.login('valid')
       } else {
         console.log('Not created Token')
-        await this.$router.replace({ name: 'index' })
+        this.$router.push('/')
       }
     }
-    await this.$router.push('/')
+    // await this.$router.push('/')
+  },
+  async fetch () {
+    if (+this.$route.query.page === 3 && !this.$route.query.token) {
+      await this.$router.push('/')
+      console.log('MOUNTED 3')
+      try {
+        const response = await this.$axios({
+          method: 'POST',
+          url: '/api/my-user/password_reset/validate_token/',
+          data: { token: this.$route.query.token }
+        })
+        console.log('OK')
+        console.log(response.status)
+      } catch (error) {
+        console.log('CatchC')
+        await console.log(error.response.status)
+        if (error.response.status) {
+          await this.$router.push('/')
+        }
+      }
+    }
   },
   */
   data () {
     return {
-      page: +this.$route.query.page || 0,
+      // page: +this.$route.query.page || 0,
       pages: [
         { name: 'Регистрация', name_eng: 'register', button: 'Создать', extra: 1 },
         { name: 'Логин', name_eng: 'login', button: 'Войти', extra: 0 },
@@ -186,7 +206,15 @@ export default {
       password_repeat: ''
     }
   },
+  computed: {
+    page () {
+      return +this.$route.query.page || 0
+    }
+  },
   methods: {
+    switchPage (page) {
+      this.$router.replace({ name: 'login', query: { page } })
+    },
     async login (action) {
       await this.$store.dispatch(`user/${action || this.pages[this.page].name_eng}`, {
         name: this.username,
