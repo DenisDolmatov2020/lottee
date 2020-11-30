@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Сброс пароля</title>
+    <title>{{ title }}</title>
 </head>
 <body style="color: dodgerblue; text-align: center;">
     <div style="width: 500px; height: 300px; border: 3px solid #00b0ff; border-radius: 25px; color: #FEFEFE; margin: 0 auto; font-family: cursive;">
@@ -10,13 +10,13 @@
             Lottee
         </h1>
         <p style="color: dodgerblue;">
-            Нажмите на кнопку сбросить пароль или перейдите по ссылке
+            {{ text }}
         </p>
         {{ link }}
         <div style="width: 200px; margin: 80px auto 0px;">
             <a href="{{ link }}" style="color: dodgerblue; text-decoration: none;">
                 <div style="width: 200px; background-color: dodgerblue; color: #FEFEFE; border-radius: 10px; padding: 10px; text-align: center;">
-                    Сбросить пароль
+                    {{ button_text }}
                 </div>
             </a>
         </div>

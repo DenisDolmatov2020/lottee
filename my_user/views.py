@@ -2,12 +2,17 @@ from django.db import connection
 from rest_framework import status
 from rest_framework.response import Response
 
+from my_user.models import Token
 from number.models import Number
-from rest_framework.generics import get_object_or_404, CreateAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
 from my_user.serializers import UserSerializer
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from lottee.settings import EMAIL_HOST_USER
+from my_user.tokens import account_activation_token
 
 
 class UserCreateView(CreateAPIView):
@@ -19,10 +24,31 @@ class UserCreateView(CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        print(3)
+
+        # sending confirm to email new user
+        token = account_activation_token.make_token(user)
+        Token.objects.create(user=user, token=token)
+        # site = get_current_site(request)
+        html_message = render_to_string('my_user/email_form.html', {
+            'title': 'Подтверждение почты',
+            'text': 'Нажмите на кнопку для подтвержения аккаунта в приложении Lottee',
+            'button_text': 'Подтвердить почту',
+            'link': 'http://127.0.0.1:3000/login?page=1&username={}&email&token={}'.format(user.name, user.email, token)
+        })
+        send_mail(
+            '{}'.format('Lottee подтверждение почты'),
+            # message:
+            'CONFIRM EMAIL',
+            # from:
+            EMAIL_HOST_USER,
+            # to:
+            [user.email],
+            html_message=html_message
+        )
+        # refresh = RefreshToken.for_user(user) 'refresh': str(refresh), 'access': str(refresh.access_token)}
+
         return Response(
-            {'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
+            serializer.data,
             status=status.HTTP_201_CREATED
         )
 

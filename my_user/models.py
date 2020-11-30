@@ -15,7 +15,10 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     email_plaintext_message = 'RESET PASSWORD'
     # "<a>{}?token={}</a>".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
 
-    html_message = render_to_string('my_user/reset_form.html', {
+    html_message = render_to_string('my_user/email_form.html', {
+        'title': 'Сброс пароля',
+        'text': 'Нажмите на кнопку сбросить пароль или перейдите по ссылке',
+        'button_text': 'Сбросить пароль',
         'link': 'http://127.0.0.1:3000/login?page=3&token={}'.format(reset_password_token.key)
     })
     send_mail(
@@ -88,11 +91,18 @@ class User(AbstractUser):
         return self.email
 
 
+class Token(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=255)
+
+
 @receiver(pre_save, sender=User)
 def set_new_user_inactive(sender, instance, **kwargs):
     if instance._state.adding is True:
-        print("Creating Inactive User")
+        print('Creating Inactive User')
         instance.is_active = False
+        print('INSTANCE')
+        print(instance)
     else:
-        print("Updating User Record")
+        print('Updating User Record')
 

@@ -20,8 +20,6 @@ class Number(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name='Lot')
     num = models.PositiveSmallIntegerField(verbose_name='Number', default=1, blank=True)
-
     won = models.BooleanField(verbose_name='winner', default=False)
-
     created = models.DateTimeField(verbose_name='Date create', auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(verbose_name='Date update', auto_now_add=False, auto_now=True)

@@ -8,10 +8,13 @@ export const actions = {
         method: 'POST',
         data: user
       })
-      if (response.status === 201) await dispatch('login', user)
-      else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
+      if (response.status === 201) {
+        $nuxt.$emit('snackbar',
+          { color: 'success', title: 'Подтверждение отправлено', text: 'На указанную почту, после Вы сможете войти' })
+        // await dispatch('login', user)
+      }
+      // else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
     } catch (error) {
-      console.error('ERROR REGISTRATION ' + JSON.stringify(error))
       $nuxt.$emit('snackbar',
         { color: 'error', icon: 'mdi-list-status', text: 'Эта почта уже зарегистрирована попробуйте войти' }
       )
@@ -24,10 +27,7 @@ export const actions = {
       dispatch('track/trackerTimer', null, { root: true })
       await $nuxt.$emit('drawer-close')
     } catch (error) {
-      let text = 'Ошибка при входе'
-      if (error.response && error.response.status === 401) {
-        text = 'Не верные данные'
-      }
+      const text = error.response && error.response.status === 401 ? 'Не верные данные' :  'Ошибка при входе'
       $nuxt.$emit('snackbar', { color: 'error', text })
     }
   },

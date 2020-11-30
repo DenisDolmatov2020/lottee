@@ -33,7 +33,7 @@
             >
             <div class="wthree-field">
               <input
-                v-model="username"
+                v-model="name"
                 name="username"
                 type="text"
                 value=""
@@ -155,6 +155,11 @@
 <script>
 export default {
   name: 'Login',
+  async fetch () {
+    if (+this.$route.query.page === 1 && this.$route.query.token) {
+      await this.$axios.$patch('/api/')
+    }
+  },
   /*
   async fetch () {
     if (+this.$route.query.page === 3) {
@@ -200,8 +205,8 @@ export default {
         { name: 'Новый пароль', name_eng: 'confirm', button: 'Сохранить', extra: 0 }
       ],
       showPassword: false,
-      username: '',
-      email: '',
+      name: this.$route.query.name || '',
+      email: this.$route.query.email || '',
       password: '',
       password_repeat: ''
     }
@@ -217,7 +222,7 @@ export default {
     },
     async login (action) {
       await this.$store.dispatch(`user/${action || this.pages[this.page].name_eng}`, {
-        name: this.username,
+        name: this.name,
         email: this.email,
         password: this.password,
         token: this.$route.query.token
