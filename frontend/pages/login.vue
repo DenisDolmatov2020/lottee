@@ -6,10 +6,13 @@
       <div class="content-w3ls">
         <form class="content-bottom">
           <div
-            v-if="$route.query.message"
-            class="login-first"
+            v-if="$route.query.message || $route.query.error_message"
+            :class="['login-first', $route.query.message ? 'login-first-success' : 'login-first-error']"
           >
-            Необходимо войти
+            {{ $route.query.message || $route.query.error_message }}
+            <v-btn style="text-decoratio;">
+              Отправить подтверждение повторно
+            </v-btn>
           </div>
           <div class="form-buttons">
             <h2>
@@ -155,9 +158,25 @@
 <script>
 export default {
   name: 'Login',
-  async fetch () {
-    if (+this.$route.query.page === 1 && this.$route.query.token) {
-      await this.$axios.$patch('/api/')
+  async mounted () {
+    if (this.$route.query.user_id && this.$route.query.token) {
+      try {
+        const response = await this.$axios.post('/api/my-user/confirm-email/',
+          { user_id: +this.$route.query.user_id, token: this.$route.query.token }
+        )
+        console.log(JSON.stringify(response.status))
+        if (response.status === 200) {
+          console.log(JSON.stringify('EMAIL confirmed'))
+          await this.$router.push('/login?page=1&message=Почта подтверждена, войдите')
+          this.ok = true
+        } else if (response.status === 226) {
+          console.log(JSON.stringify('OLDEST TOKEN'))
+          await this.$router.push('/login?page=1&error_message=Токен устарел')
+          this.ok = false
+        }
+      } catch (error) {
+        this.ok = false
+      }
     }
   },
   /*
@@ -232,13 +251,18 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .login-first {
   text-align: center;
   max-width: 350px;
   padding: 20px;
   color: white;
-  background-color: rgba(255, 0, 0, 0.7);
+  &-success {
+    background-color: rgba(0, 255, 0, 0.7);
+  }
+  &-error {
+    background-color: rgba(255, 0, 0, 0.7);
+  }
 }
 .form-buttons {
   display: flex;
