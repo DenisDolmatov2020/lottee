@@ -4,15 +4,23 @@
 
     <div class="user-container">
       <div class="content-w3ls">
-        <form class="content-bottom">
+        <form
+          v-if="!$fetchState.pending"
+          class="content-bottom"
+        >
           <div
-            v-if="$route.query.message || $route.query.error_message"
-            :class="['login-first', $route.query.message ? 'login-first-success' : 'login-first-error']"
+            v-if="status !== 204"
+            :class="['login-first', status >= 400 ? 'login-first-error' : 'login-first-success']"
           >
-            {{ $route.query.message || $route.query.error_message }}
-            <v-btn style="text-decoratio;">
-              Отправить подтверждение повторно
-            </v-btn>
+            {{ messages[status] }}
+            <br>
+            <span
+              v-if="status >= 405"
+              class="login-first-link"
+              @click="sendConfirm"
+            >
+              Отправить повторно
+            </span>
           </div>
           <div class="form-buttons">
             <h2>
@@ -63,6 +71,7 @@
                 value="page"
                 placeholder="E-mail"
                 required
+                @input="checkEmail"
               >
             </div>
           </div>
@@ -119,13 +128,13 @@
             </div>
           </div>
 
-          <div
+          <button
             type="button"
             class="btn btn-entry"
             @click="login()"
           >
             {{ pages[page].button }}
-          </div>
+          </button>
           <div class="pages-bottom">
             <div
               v-if="page < 2"
@@ -158,27 +167,20 @@
 <script>
 export default {
   name: 'Login',
-  async mounted () {
+  async fetch () {
     if (this.$route.query.user_id && this.$route.query.token) {
       try {
-        const response = await this.$axios.post('/api/my-user/confirm-email/',
-          { user_id: +this.$route.query.user_id, token: this.$route.query.token }
-        )
-        console.log(JSON.stringify(response.status))
-        if (response.status === 200) {
-          console.log(JSON.stringify('EMAIL confirmed'))
-          await this.$router.push('/login?page=1&message=Почта подтверждена, войдите')
-          this.ok = true
-        } else if (response.status === 226) {
-          console.log(JSON.stringify('OLDEST TOKEN'))
-          await this.$router.push('/login?page=1&error_message=Токен устарел')
-          this.ok = false
-        }
+        await this.$axios.post('/api/my-user/confirm/',
+          { user_id: +this.$route.query.user_id, token: this.$route.query.token })
+          .then((response) => {
+            this.status = response.status
+          })
       } catch (error) {
-        this.ok = false
+        this.status = error.response.status
       }
     }
   },
+  fetchOnServer: false,
   /*
   async fetch () {
     if (+this.$route.query.page === 3) {
@@ -216,27 +218,51 @@ export default {
   */
   data () {
     return {
-      // page: +this.$route.query.page || 0,
+      status: 204,
       pages: [
         { name: 'Регистрация', name_eng: 'register', button: 'Создать', extra: 1 },
         { name: 'Логин', name_eng: 'login', button: 'Войти', extra: 0 },
         { name: 'Сброс пароля', name_eng: 'reset', button: 'Сбросить', extra: 0 },
         { name: 'Новый пароль', name_eng: 'confirm', button: 'Сохранить', extra: 0 }
       ],
+      messages: {
+        204: '',
+        200: 'Почта подтверждена',
+        201: 'Подтверждение отправлено на почту, возможно в папке спам',
+        404: 'Пользователь не найден',
+        406: 'Почта не подтверждена',
+        408: 'Токен устарел или не верен'
+      },
       showPassword: false,
       name: this.$route.query.name || '',
       email: this.$route.query.email || '',
       password: '',
-      password_repeat: ''
+      password_repeat: '',
+      reg: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     }
   },
   computed: {
     page () {
       return +this.$route.query.page || 0
+    },
+    isEmailValid () {
+      return this.reg.test(this.email)
     }
   },
   methods: {
+    async checkEmail () {
+      if (this.isEmailValid) {
+        try {
+          await this.$axios.put('/api/my-user/confirm/', { email: this.email })
+            .then((response) => { this.status = response.status })
+        } catch (error) {
+          console.log('CHECK EMAIL CATCH')
+          this.status = error.response.status
+        }
+      }
+    },
     switchPage (page) {
+      this.status = 204
       this.$router.replace({ name: 'login', query: { page } })
     },
     async login (action) {
@@ -245,7 +271,15 @@ export default {
         email: this.email,
         password: this.password,
         token: this.$route.query.token
-      })
+      }).then((response) => { if (!this.page) { this.status = response.status } })
+    },
+    async sendConfirm () {
+      try {
+        await this.$axios.patch('/api/my-user/confirm/', { email: this.email })
+          .then((response) => { this.status = response.status })
+      } catch (error) {
+        this.status = error.response.status
+      }
     }
   }
 }
@@ -263,6 +297,12 @@ export default {
   &-error {
     background-color: rgba(255, 0, 0, 0.7);
   }
+  &-link {
+    text-decoration: underline; opacity: .5; cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
 .form-buttons {
   display: flex;
@@ -274,7 +314,6 @@ export default {
   margin-right: 5px;
 }
 .user-container {
-  /* background: url(~assets/view.jpeg) no-repeat center center fixed; */
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -458,7 +497,7 @@ h5 {
 
 .field-group .wthree-field {
   flex: 2 55%;
-  -webkit-box-flex:2 55%;     /* OLD - iOS 6-, Safari 3.1-6 */
+  -webkit-box-flex: 2 55%;     /* OLD - iOS 6-, Safari 3.1-6 */
   -moz-box-flex: 2 55%;        /* OLD - Firefox 19- */
   -webkit-flex: 2 55%;          /* Chrome */
   -ms-flex: 2 55%;             /* IE 10 */

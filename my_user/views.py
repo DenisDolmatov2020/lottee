@@ -1,20 +1,16 @@
 from django.db import connection
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-
+from rest_framework.viewsets import ViewSet
+from my_user.serializers import TokenSerializer
 from my_user.models import Token, User
+from my_user.services import send_confirm
 from number.models import Number
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
 from my_user.serializers import UserSerializer
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from lottee.settings import EMAIL_HOST_USER
 from my_user.tokens import account_activation_token
 
 
@@ -27,29 +23,7 @@ class UserCreateView(CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
-        # sending confirm to email new user
-        token = account_activation_token.make_token(user)
-        Token.objects.create(user=user, token=token)
-        # site = get_current_site(request)
-        html_message = render_to_string('my_user/email_form.html', {
-            'title': 'Подтверждение почты',
-            'text': 'Нажмите на кнопку для подтвержения аккаунта в приложении Lottee',
-            'button_text': 'Подтвердить почту',
-            'link': 'http://127.0.0.1:3000/login?page=1&user_id={}&name={}&email={}&token={}'.format(
-                user.id, user.name, user.email, token)
-        })
-        send_mail(
-            '{}'.format('Lottee подтверждение почты'),
-            # message:
-            'CONFIRM EMAIL',
-            # from:
-            EMAIL_HOST_USER,
-            # to:
-            [user.email],
-            html_message=html_message
-        )
-        # refresh = RefreshToken.for_user(user) 'refresh': str(refresh), 'access': str(refresh.access_token)}
+        send_confirm(user)
 
         return Response(
             serializer.data,
@@ -57,34 +31,62 @@ class UserCreateView(CreateAPIView):
         )
 
 
-@csrf_exempt
-def user_confirm_email(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
+class UserConfirmViewSet(ViewSet):
+    permission_classes = [AllowAny]
+    queryset = Token.objects.all()
+    serializer_class = TokenSerializer
 
+    @staticmethod
+    def get_object_or_none(obj, **kwargs):
         try:
-            token = Token.objects.get(user_id=data['user_id'])
-        except Token.DoesNotExist:
-            token = None
+            return obj.objects.get(**kwargs)
+        except obj.DoesNotExist:
+            return None
 
+    # подтверждение почты
+    def create(self, request):
+        data = JSONParser().parse(request)
+        user = self.get_object_or_none(User, pk=data['user_id'])
+        token = self.get_object_or_none(Token, user_id=data['user_id'])
         if token and data['token'] == token.token:
-            print('IF')
             token.delete()
-            user = User.objects.get(id=data['user_id'])
             user.is_active = True
             user.save()
-            return HttpResponse(status=status.HTTP_200_OK)
-        else:
-            print('ELSE')
-            return HttpResponse(status=status.HTTP_226_IM_USED)
-    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        if user.is_active:
+            return Response({'message': 'Почта подтверждена, войдите'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Токен устарел или не верен'}, status=status.HTTP_408_REQUEST_TIMEOUT)
+
+    # Повторная отправка подтверждения или проверка статуса регистрации почты
+    def patch(self, request):
+        data = JSONParser().parse(request)
+        user = self.get_object_or_none(User, email=data['email'])
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        elif user.is_active:
+            return Response(status=status.HTTP_200_OK)
+
+        token = self.get_object_or_none(Token, user=user)
+        if token:
+            token.delete()
+        send_confirm(user)
+        return Response(status=status.HTTP_201_CREATED)
+
+    # Проверка статуса регистрации почты
+    def put(self, request):
+        data = JSONParser().parse(request)
+        user = self.get_object_or_none(User, email=data['email'])
+        if user and not user.is_active:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserRetrieveUpdateView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = get_user_model()
     serializer_class = UserSerializer
-    # parser_classes = (MultiPartParser,)
 
     def retrieve(self, request, *args, **kwargs):
         serializer = self.get_serializer(request.user)
