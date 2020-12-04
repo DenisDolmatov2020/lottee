@@ -37,25 +37,31 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user(self, email, password, **extra_fields):
+    def _create_user(self, email, phone, password, **extra_fields):
         """Create and save a User with the given email and password."""
-        if not email:
+        if not email or phone:
             # email = 'admin@lottee.com'
-            raise ValueError('The given email must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+            raise ValueError('The given email or phone must be set')
+        elif email:
+            email = self.normalize_email(email)
+            user = self.model(email=email, **extra_fields)
+            user.set_password(password)
+            user.save(using=self._db)
+            return user
+        elif phone:
+            user = self.model(phone=phone, **extra_fields)
+            user.set_password(password)
+            user.save(using=self._db)
+            return user
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email, phone, password=None, **extra_fields):
         """Create and save a regular User with the given email and password."""
         extra_fields.setdefault('locale', 'ru')
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(email, phone, password, **extra_fields)
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, phone, password, **extra_fields):
         """Create and save a SuperUser with the given email and password."""
         extra_fields.setdefault('locale', 'en')
         extra_fields.setdefault('is_staff', True)
@@ -66,15 +72,15 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(email, phone, password, **extra_fields)
 
 
 class User(AbstractUser):
     """ User model """
     username = None
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True, null=True, blank=True)
+    phone = models.CharField(_('phone_number'), max_length=32, unique=True, null=True, blank=True)
     name = models.CharField(verbose_name='name', max_length=255)
-    phone = models.CharField(max_length=32, null=True)
     address = models.CharField(max_length=200, null=True)
     image = models.ImageField(verbose_name='Аватар', upload_to='user/', blank=True, null=True)
 
@@ -101,8 +107,6 @@ def set_new_user_inactive(sender, instance, **kwargs):
     if instance._state.adding is True:
         print('Creating Inactive User')
         instance.is_active = False
-        print('INSTANCE')
-        print(instance)
     else:
         print('Updating User Record')
 

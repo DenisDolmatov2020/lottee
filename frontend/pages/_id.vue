@@ -136,15 +136,14 @@
     </div>
     <v-spacer />
     <v-divider class="mx-4" />
-    <div
+    <button
       v-if="$auth.loggedIn && lot.user.id !== $auth.user.id && !$auth.user.numbers[lot.id] && lot.active"
       type="button"
-      class="btn btn-entry"
-      style="position: absolute; bottom: 10px; left: 5%; width: 90%;"
+      class="btn btn-entry btn-lot"
       @click="takeNumber"
     >
       Взять номер
-    </div>
+    </button>
     <v-row v-else>
       <v-col cols="5" class="blue--text text--lighten-1 ml-4">
         {{ $auth.loggedIn && $auth.user.numbers[lot.id] ? `Ваш номер #${$auth.user.numbers[lot.id]}` : '' }}
@@ -159,6 +158,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+
 export default {
   async fetch () {
     await this.fetchLot(this.$route.params.id)
@@ -200,4 +200,10 @@ export default {
 </script>
 
 <style scoped>
+.btn-lot {
+  position: absolute;
+  bottom: 10px;
+  left: 5%;
+  width: 90%;
+}
 </style>

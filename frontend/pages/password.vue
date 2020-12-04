@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header :page="{ title: 'Логин', color: '#333', dark: true, update: false }" />
+    <Header :page="{ title: 'Смена пароля', color: '#00cae3', dark: true, update: false }" />
 
     <div class="user-container">
       <div class="content-w3ls">
@@ -9,76 +9,29 @@
           class="content-bottom"
         >
           <div
-            v-if="status !== 204"
-            :class="['login-first', status >= 400 ? 'login-first-error' : 'login-first-success']"
+            v-if="message"
+            :class="['login-first', 'login-first-error']"
           >
-            {{ messages[status] }}
-            <br>
-            <span
-              v-if="status >= 405"
-              class="login-first-link"
-              @click="requests('confirm')"
-            >
-              Отправить повторно
-            </span>
+            {{ message }}
           </div>
-          <div class="form-buttons">
-            <h2>
-              {{ pages[page].name }}
-            </h2>
-            <h5
-              v-if="page !== 'reset' || page !== 'confirm'"
-              @click="switchPage(pages[page].extra)"
-            >
-              {{ pages[pages[page].extra].name }}
-            </h5>
-          </div>
-          <div
-            v-if="page !== 'register'"
-            class="field-group"
-          >
+          <div class="field-group">
             <img
-              alt="user icon"
+              alt="lock icon"
               class="icon-field"
-              :src="require('assets/icons/user.svg')"
+              :src="require('assets/icons/lock.svg')"
             >
             <div class="wthree-field">
               <input
-                v-model="user.name"
-                name="username"
-                type="text"
-                value=""
-                placeholder="Username"
-                required
+                id="old_password"
+                v-model="old_password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="on"
+                placeholder="Старый пароль"
               >
             </div>
           </div>
-          <div
-            v-if="page !== 'confirm'"
-            class="field-group"
-          >
-            <img
-              alt="email icon"
-              class="icon-field"
-              :src="require('assets/icons/email.svg')"
-            >
-            <div class="wthree-field">
-              <input
-                id="email"
-                v-model="user.email"
-                name="email"
-                type="email"
-                value="page"
-                placeholder="E-mail"
-                required
-                @input="checkEmail"
-              >
-            </div>
-          </div>
-          <div
-            v-if="page !== 'reset'"
-            class="field-group"
-          >
+          <div class="field-group">
             <img
               alt="lock icon"
               class="icon-field"
@@ -87,7 +40,7 @@
             <div class="wthree-field">
               <input
                 id="password"
-                v-model="user.password"
+                v-model="password"
                 name="password"
                 :type="showPassword ? 'text' : 'password'"
                 autocomplete="on"
@@ -95,10 +48,7 @@
               >
             </div>
           </div>
-          <div
-            v-if="page !== 'register' || page === 'confirm'"
-            class="field-group"
-          >
+          <div class="field-group">
             <img
               alt="lock icon"
               class="icon-field"
@@ -107,7 +57,7 @@
             <div class="wthree-field">
               <input
                 id="password-repeat"
-                v-model="user.password_repeat"
+                v-model="repeat_password"
                 name="password-repeat"
                 :type="showPassword ? 'text' : 'password'"
                 autocomplete="on"
@@ -115,10 +65,7 @@
               >
             </div>
           </div>
-          <div
-            v-if="page !== 'reset'"
-            class="field-group-2"
-          >
+          <div class="field-group-2">
             <div class="switch-agileits">
               <label class="switch">
                 <input v-model="showPassword" type="checkbox">
@@ -131,33 +78,10 @@
           <button
             type="button"
             class="btn btn-entry"
-            @click="requests()"
+            @click="login()"
           >
-            {{ pages[page].button }}
+            Сменить
           </button>
-          <div class="pages-bottom">
-            <div
-              v-if="page !== 'reset' || page !== 'confirm'"
-              class="forgot-password"
-              @click="switchPage('reset')"
-            >
-              забыли пароль?
-            </div>
-            <div
-              v-else
-              class="forgot-password"
-              @click="switchPage('register')"
-            >
-              Зарегистрироваться
-            </div>
-            <div
-              v-if="page !== 'login'"
-              class="forgot-password"
-              @click="switchPage('login')"
-            >
-              Войти
-            </div>
-          </div>
         </form>
       </div>
     </div>
@@ -166,112 +90,33 @@
 
 <script>
 export default {
-  name: 'Login',
-  async fetch () {
-    if (this.$route.query.user_id && this.$route.query.token) {
-      await this.requests('confirm')
-    }
-  },
+  async fetch () {},
   fetchOnServer: false,
-  /*
-  async fetch () {
-    if (+this.$route.query.page === 3) {
-      if (this.$route.query.token) {
-        console.log('created Token')
-        await this.login('valid')
-      } else {
-        console.log('Not created Token')
-        this.$router.push('/')
-      }
-    }
-    // await this.$router.push('/')
-  },
-  async fetch () {
-    if (+this.$route.query.page === 3 && !this.$route.query.token) {
-      await this.$router.push('/')
-      console.log('MOUNTED 3')
-      try {
-        const response = await this.$axios({
-          method: 'POST',
-          url: '/api/my-user/password_reset/validate_token/',
-          data: { token: this.$route.query.token }
-        })
-        console.log('OK')
-        console.log(response.status)
-      } catch (error) {
-        console.log('CatchC')
-        await console.log(error.response.status)
-        if (error.response.status) {
-          await this.$router.push('/')
-        }
-      }
-    }
-  },
-  */
   data () {
     return {
-      status: 204,
-      pages: {
-        register: { name: 'Регистрация', button: 'Создать', extra: 'login' },
-        login: { name: 'Логин', button: 'Войти', extra: 'register' },
-        reset: { name: 'Сброс пароля', button: 'Сбросить', extra: 'register' },
-        confirm: { name: 'Новый пароль', button: 'Сохранить', extra: 'register' }
-      },
-      messages: {
-        204: '',
-        200: 'Почта подтверждена',
-        201: 'Подтверждение отправлено на почту, возможно в папке спам',
-        404: 'Пользователь не найден',
-        406: 'Почта не подтверждена',
-        408: 'Токен устарел или не верен',
-        500: 'Токен устарел или не верен'
-      },
+      message: '',
       showPassword: false,
-      user: {
-        user_id: +this.$route.query.user_id || null,
-        token: this.$route.query.token || null,
-        name: this.$route.query.name || '',
-        email: this.$route.query.email || '',
-        password: '',
-        password_repeat: ''
-      },
-      reg: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
-    }
-  },
-  computed: {
-    page () {
-      return +this.$route.query.page || 'register'
-    },
-    isEmailValid () {
-      return this.reg.test(this.email)
+      old_password: '',
+      password: '',
+      repeat_password: ''
     }
   },
   methods: {
-    async checkEmail () {
-      if (this.isEmailValid) {
-        try {
-          await this.$axios.put('/api/my-user/confirm/', { email: this.email })
-            .then((response) => { this.status = response.status })
-        } catch (error) {
-          this.status = error.response.status
-        }
-      }
-    },
     switchPage (page) {
-      this.status = 204
       this.$router.replace({ name: 'login', query: { page } })
     },
-    async requests (page) {
-      try {
-        const response = await this.$axios.post(
-          `/api/my-user/${page || this.page}/`,
-          this.user
-        )
-        this.status = response.status
-        this.$router.replace(`/login?page=${this.pages[this.page].extra}`)
-      } catch (error) {
-        this.status = error.response.status
-      }
+    async login () {
+      await this.$axios.patch('/api/my-user/update-password/',
+        {
+          old_password: this.old_password,
+          password: this.password,
+          repeat_password: this.repeat_password
+        })
+        .then(() => {
+          this.$router.push({ name: 'profile' })
+          this.$nuxt.$emit('snackbar', { color: 'success', text: 'Пароль изменен' })
+        })
+        .catch((error) => { this.message = error.response.data.message[0] })
     }
   }
 }
@@ -282,24 +127,11 @@ export default {
   text-align: center;
   max-width: 350px;
   padding: 20px;
+  margin-bottom: 20px;
   color: white;
-  &-success {
-    background-color: rgba(0, 255, 0, 0.7);
-  }
   &-error {
-    background-color: rgba(255, 0, 0, 0.7);
+    background-color: rgba(255, 0, 0, 1);
   }
-  &-link {
-    text-decoration: underline; opacity: .5; cursor: pointer;
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-}
-.form-buttons {
-  display: flex;
-  justify-content: space-between;
-  justify-self: center;
 }
 .icon-field {
   width: 30px;
@@ -310,7 +142,7 @@ export default {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  padding: 100px 0 180px 0;
+  padding: 50px 0 50px 0;
 }
 .pages-bottom {
   display: flex;
@@ -373,7 +205,7 @@ body {
 .content-bottom {
   min-height: 25em;
   padding: 3em 4em;
-  background: #333;  /* rgba(0, 0, 0, 0.4); */
+  background: #00cae3;  /* rgba(0, 0, 0, 0.4); */
   border-radius: 1px 1px 1px 0;
   margin: 0 1em;
   box-shadow: 12px 12px rgba(0, 0, 0, 0.6);
@@ -666,7 +498,7 @@ input:checked+.slider:before {
     flex: 3 37%;
   }
   .copyright p {
-    padding: 0 1em 2em;
+    padding:0 1em 2em;
     letter-spacing: 0;
   }
 }

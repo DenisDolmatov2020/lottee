@@ -145,9 +145,7 @@ export default {
     drawer (url) {
       this.$router.push(url)
     },
-    ...mapActions('user', [
-      'logout'
-    ])
+    ...mapActions('user', ['logout'])
   }
 }
 </script>

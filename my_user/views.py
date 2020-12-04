@@ -3,15 +3,14 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from my_user.serializers import TokenSerializer
+from my_user.serializers import TokenSerializer, UpdatePasswordSerializer
 from my_user.models import Token, User
 from my_user.services import send_confirm
 from number.models import Number
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
 from my_user.serializers import UserSerializer
-from my_user.tokens import account_activation_token
 
 
 class UserCreateView(CreateAPIView):
@@ -23,12 +22,25 @@ class UserCreateView(CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
         send_confirm(user)
 
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED
         )
+
+
+class UpdatePasswordView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UpdatePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserConfirmViewSet(ViewSet):

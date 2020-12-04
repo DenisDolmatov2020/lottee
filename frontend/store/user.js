@@ -10,10 +10,8 @@ export const actions = {
       })
       if (response.status === 201) {
         $nuxt.$emit('snackbar',
-          { color: 'success', title: 'Подтверждение отправлено', text: 'На указанную почту, после Вы сможете войти' })
-        // await dispatch('login', user)
+          { color: 'success', text: 'Подтверждение отправлено на указанную почту' })
       }
-      // else $nuxt.$emit('snackbar', { color: 'error', text: 'Такой пользователь уже существует' })
     } catch (error) {
       $nuxt.$emit('snackbar',
         { color: 'error', icon: 'mdi-list-status', text: 'Эта почта уже зарегистрирована попробуйте войти' }
@@ -22,7 +20,7 @@ export const actions = {
   },
   async login ({ commit, dispatch }, user) {
     try {
-      await this.$auth.loginWith('local', { data: user})
+      await this.$auth.loginWith('local', { data: user })
       $nuxt.$emit('snackbar', { color: 'success', text: 'ВХОД ВЫПОЛНЕН' })
       dispatch('track/trackerTimer', null, { root: true })
       await $nuxt.$emit('drawer-close')
@@ -53,8 +51,9 @@ export const actions = {
   async update ({ state, dispatch }, user) {
     const formData = new FormData()
     const keys = Object.keys(user)
+    console.log(JSON.stringify(user))
     keys.forEach(key => {
-      if (key !== 'image' || key === 'image' && user[key] && typeof user[key] === 'object') {
+      if (user[key] && (key !== 'image' || key === 'image' && typeof user[key] === 'object')) {
         formData.append(key, user[key])
       }
     })

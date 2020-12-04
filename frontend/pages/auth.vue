@@ -17,7 +17,7 @@
             <span
               v-if="status >= 405"
               class="login-first-link"
-              @click="requests('confirm')"
+              @click="sendConfirm"
             >
               Отправить повторно
             </span>
@@ -27,14 +27,14 @@
               {{ pages[page].name }}
             </h2>
             <h5
-              v-if="page !== 'reset' || page !== 'confirm'"
+              v-if="page < 2"
               @click="switchPage(pages[page].extra)"
             >
               {{ pages[pages[page].extra].name }}
             </h5>
           </div>
           <div
-            v-if="page !== 'register'"
+            v-if="!page"
             class="field-group"
           >
             <img
@@ -54,7 +54,7 @@
             </div>
           </div>
           <div
-            v-if="page !== 'confirm'"
+            v-if="page !== 3"
             class="field-group"
           >
             <img
@@ -76,7 +76,7 @@
             </div>
           </div>
           <div
-            v-if="page !== 'reset'"
+            v-if="page !== 2"
             class="field-group"
           >
             <img
@@ -96,7 +96,7 @@
             </div>
           </div>
           <div
-            v-if="page !== 'register' || page === 'confirm'"
+            v-if="!page || page === 3"
             class="field-group"
           >
             <img
@@ -116,7 +116,7 @@
             </div>
           </div>
           <div
-            v-if="page !== 'reset'"
+            v-if="page !== 2"
             class="field-group-2"
           >
             <div class="switch-agileits">
@@ -137,23 +137,23 @@
           </button>
           <div class="pages-bottom">
             <div
-              v-if="page !== 'reset' || page !== 'confirm'"
+              v-if="page < 2"
               class="forgot-password"
-              @click="switchPage('reset')"
+              @click="switchPage(2)"
             >
               забыли пароль?
             </div>
             <div
               v-else
               class="forgot-password"
-              @click="switchPage('register')"
+              @click="switchPage(0)"
             >
               Зарегистрироваться
             </div>
             <div
-              v-if="page !== 'login'"
+              v-if="page !== 1"
               class="forgot-password"
-              @click="switchPage('login')"
+              @click="switchPage(1)"
             >
               Войти
             </div>
@@ -169,62 +169,26 @@ export default {
   name: 'Login',
   async fetch () {
     if (this.$route.query.user_id && this.$route.query.token) {
-      await this.requests('confirm')
+      await this.requests('confirm/')
     }
   },
   fetchOnServer: false,
-  /*
-  async fetch () {
-    if (+this.$route.query.page === 3) {
-      if (this.$route.query.token) {
-        console.log('created Token')
-        await this.login('valid')
-      } else {
-        console.log('Not created Token')
-        this.$router.push('/')
-      }
-    }
-    // await this.$router.push('/')
-  },
-  async fetch () {
-    if (+this.$route.query.page === 3 && !this.$route.query.token) {
-      await this.$router.push('/')
-      console.log('MOUNTED 3')
-      try {
-        const response = await this.$axios({
-          method: 'POST',
-          url: '/api/my-user/password_reset/validate_token/',
-          data: { token: this.$route.query.token }
-        })
-        console.log('OK')
-        console.log(response.status)
-      } catch (error) {
-        console.log('CatchC')
-        await console.log(error.response.status)
-        if (error.response.status) {
-          await this.$router.push('/')
-        }
-      }
-    }
-  },
-  */
   data () {
     return {
       status: 204,
-      pages: {
-        register: { name: 'Регистрация', button: 'Создать', extra: 'login' },
-        login: { name: 'Логин', button: 'Войти', extra: 'register' },
-        reset: { name: 'Сброс пароля', button: 'Сбросить', extra: 'register' },
-        confirm: { name: 'Новый пароль', button: 'Сохранить', extra: 'register' }
-      },
+      pages: [
+        { name: 'Регистрация', name_eng: 'register', link: 'create/', button: 'Создать', extra: 1 },
+        { name: 'Логин', name_eng: 'login', link: 'token/', button: 'Войти', extra: 0 },
+        { name: 'Сброс пароля', name_eng: 'reset', link: 'password_reset/', button: 'Сбросить', extra: 0 },
+        { name: 'Новый пароль', name_eng: 'confirm', button: 'Сохранить', extra: 0 }
+      ],
       messages: {
         204: '',
         200: 'Почта подтверждена',
         201: 'Подтверждение отправлено на почту, возможно в папке спам',
         404: 'Пользователь не найден',
         406: 'Почта не подтверждена',
-        408: 'Токен устарел или не верен',
-        500: 'Токен устарел или не верен'
+        408: 'Токен устарел или не верен'
       },
       showPassword: false,
       user: {
@@ -240,35 +204,47 @@ export default {
   },
   computed: {
     page () {
-      return +this.$route.query.page || 'register'
+      return +this.$route.query.page || 0
     },
     isEmailValid () {
-      return this.reg.test(this.email)
+      return this.reg.test(this.user.email)
     }
   },
   methods: {
     async checkEmail () {
       if (this.isEmailValid) {
-        try {
-          await this.$axios.put('/api/my-user/confirm/', { email: this.email })
-            .then((response) => { this.status = response.status })
-        } catch (error) {
-          this.status = error.response.status
-        }
+        await this.requests('confirm/', 'PUT')
       }
     },
     switchPage (page) {
       this.status = 204
-      this.$router.replace({ name: 'login', query: { page } })
+      this.$router.replace({ name: 'auth', query: { page } })
     },
-    async requests (page) {
+    async login (action) {
+      await this.$store.dispatch(`user/${action || this.pages[this.page].name_eng}`, {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        token: this.$route.query.token
+      })
+    },
+    async requests (link, method = 'POST') {
       try {
-        const response = await this.$axios.post(
-          `/api/my-user/${page || this.page}/`,
-          this.user
-        )
+        const response = await this.$axios({
+          url: `/api/my-user/${link || this.pages[this.page].link}`,
+          method,
+          data: this.user
+        })
         this.status = response.status
-        this.$router.replace(`/login?page=${this.pages[this.page].extra}`)
+        // this.$router.replace(`/auth?page=${this.pages[this.page].extra}`)
+      } catch (error) {
+        this.status = error.response.status
+      }
+    },
+    async sendConfirm () {
+      try {
+        await this.$axios.patch('/api/my-user/confirm/', { email: this.email })
+          .then((response) => { this.status = response.status })
       } catch (error) {
         this.status = error.response.status
       }
@@ -321,12 +297,10 @@ export default {
   margin-top: 1em;
   color: #81D4FA;
 }
-
 blockquote,
 q {
   quotes: none;
 }
-
 blockquote:before,
 blockquote:after,
 q:before,
@@ -337,24 +311,18 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-
 /*--start editing from here--*/
-
 a {
   text-decoration: none;
 }
-
 /* horizontal menu */
-
 img {
   max-width: 100%;
 }
-
 /*--end reset--*/
 body a:hover {
   text-decoration: none;
 }
-
 body {
   background-size: cover;
   -webkit-background-size: cover;
@@ -364,12 +332,10 @@ body {
   background-attachment: fixed;
   font-family: cursive;
 }
-
 .content-w3ls {
   max-width: 500px;
   margin: 0 auto;
 }
-
 .content-bottom {
   min-height: 25em;
   padding: 3em 4em;
@@ -382,7 +348,6 @@ body {
   -moz-box-shadow: 12px 12px rgba(0, 0, 0, 0.6);
   -ms-box-shadow: 12px 12px rgba(0, 0, 0, 0.6);
 }
-
 h2 {
   font-size: 25px;
   color: #fff;
@@ -396,16 +361,13 @@ h5 {
   margin-top: 0.5em;
   cursor: pointer;
 }
-
 .field-group label {
   font-size: 15px;
 }
-
 .radio input {
   position: absolute;
   left: -9999px;
 }
-
 .checkbox i {
   position: absolute;
   bottom: 5px;
@@ -417,7 +379,6 @@ h5 {
   border: none;
   background: #fff;
 }
-
 .check label {
   margin: 0;
   font-size: 1em;
@@ -426,12 +387,10 @@ h5 {
   letter-spacing: 1px;
   font-weight: 300;
 }
-
 .checkbox input:checked+i:after,
 .radio input:checked+i:after {
   opacity: 1;
 }
-
 .checkbox input+i:after {
   content: '';
   top: 0px;
@@ -441,7 +400,6 @@ h5 {
   font: normal 8px/16px FontAwesome;
   text-align: center;
 }
-
 .checkbox input+i:after,
 .radio input+i:after {
   position: absolute;
@@ -452,7 +410,6 @@ h5 {
   -moz-transition: opacity 0.1s;
   -webkit-transition: opacity 0.1s;
 }
-
 .field-group {
   background: transparent;
   display: flex;
@@ -469,7 +426,6 @@ h5 {
 .field-group-2 {
   margin: 0 0 12px 0;
 }
-
 .field-group span {
   flex: 1;
   -webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
@@ -486,7 +442,6 @@ h5 {
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
 }
-
 .field-group .wthree-field {
   flex: 2 55%;
   -webkit-box-flex: 2 55%;     /* OLD - iOS 6-, Safari 3.1-6 */
@@ -494,7 +449,6 @@ h5 {
   -webkit-flex: 2 55%;          /* Chrome */
   -ms-flex: 2 55%;             /* IE 10 */
 }
-
 .wthree-field input {
   padding: 15px;
   font-size: 16px;
@@ -510,9 +464,7 @@ h5 {
   border-top-right-radius: 30px;
   border-bottom-right-radius: 30px;
 }
-
 /* switch */
-
 label.switch {
   position: relative;
   display: inline-block;
@@ -522,22 +474,18 @@ label.switch {
   color: #fff;
   font-weight: 300;
 }
-
 li:nth-child(2) a,
 label.switch {
   font-size: 16px;
   letter-spacing: 0.5px;
   font-weight: 300;
 }
-
 li:nth-child(2) a {
   color: #fff;
 }
-
 .switch input {
   display: none;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
@@ -550,7 +498,6 @@ li:nth-child(2) a {
   -webkit-transition: .4s;
   transition: .4s;
 }
-
 .slider:before {
   position: absolute;
   content: "";
@@ -562,31 +509,24 @@ li:nth-child(2) a {
   -webkit-transition: .4s;
   transition: .4s;
 }
-
 input:checked+.slider {
   background-color: #03A9F4;
 }
-
 input:focus+.slider {
   box-shadow: 0 0 1px #2196F3;
 }
-
 input:checked+.slider:before {
   -webkit-transform: translateX(20px);
   -ms-transform: translateX(20px);
   transform: translateX(20px);
 }
-
 /* Rounded sliders */
-
 .slider.round {
   border-radius: 34px;
 }
-
 .slider.round:before {
   border-radius: 50%;
 }
-
 @media screen and (max-width: 1280px) {
   .content-w3ls {
     margin: 1em auto;
@@ -623,7 +563,6 @@ input:checked+.slider:before {
     padding: 3.5em 2em 1em;
   }
 }
-
 @media screen and (max-width: 480px) {
   h1.title-agile {
     font-size: 2.7em;
@@ -635,10 +574,9 @@ input:checked+.slider:before {
     float: none;
   }
   ul.list-login li:nth-child(2){
-    margin: 1em 0 0;
+    margin:1em 0 0;
   }
 }
-
 @media screen and (max-width: 414px) {
   h1.title-agile {
     font-size: 2.45em;
@@ -647,7 +585,6 @@ input:checked+.slider:before {
     flex: 3 41%;
   }
 }
-
 @media screen and (max-width: 384px) {
   h1.title-agile {
     font-size: 2.15em;
@@ -660,13 +597,12 @@ input:checked+.slider:before {
     line-height: 43px;
   }
 }
-
 @media screen and (max-width: 375px) {
   form .field-group .wthree-field {
     flex: 3 37%;
   }
   .copyright p {
-    padding: 0 1em 2em;
+    padding:0 1em 2em;
     letter-spacing: 0;
   }
 }
