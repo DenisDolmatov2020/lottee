@@ -19,7 +19,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         'title': 'Сброс пароля',
         'text': 'Нажмите на кнопку сбросить пароль или перейдите по ссылке',
         'button_text': 'Сбросить пароль',
-        'link': 'http://127.0.0.1:3000/auth?page=3&token={}'.format(reset_password_token.key)
+        'link': 'http://127.0.0.1:3000/auth?page=3&email={}&token={}'.format(reset_password_token.user.email, reset_password_token.key)
     })
     send_mail(
         # title:
