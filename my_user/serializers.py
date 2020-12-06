@@ -3,7 +3,6 @@ from rest_framework import serializers
 from my_user.models import User, Token
 from django.contrib.auth import password_validation
 from django.utils.translation import gettext_lazy as _
-from my_user.services import send_confirm
 
 
 class TokenSerializer(serializers.ModelSerializer):

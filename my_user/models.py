@@ -13,13 +13,12 @@ from django.template.loader import render_to_string
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
     email_plaintext_message = 'RESET PASSWORD'
-    # "<a>{}?token={}</a>".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
-
     html_message = render_to_string('my_user/email_form.html', {
         'title': 'Сброс пароля',
         'text': 'Нажмите на кнопку сбросить пароль или перейдите по ссылке',
         'button_text': 'Сбросить пароль',
-        'link': 'http://127.0.0.1:3000/auth?page=3&email={}&token={}'.format(reset_password_token.user.email, reset_password_token.key)
+        'link': 'http://127.0.0.1:3000/auth?page=3&email={}&token={}'
+                                    .format(reset_password_token.user.email, reset_password_token.key)
     })
     send_mail(
         # title:
