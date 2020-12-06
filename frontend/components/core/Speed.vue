@@ -9,7 +9,7 @@
           class="btn-no-auth"
           v-bind="attrs"
           v-on="on"
-          @click="drawer('/login')"
+          @click="drawer('/auth')"
         >
           <v-icon>
             mdi-account

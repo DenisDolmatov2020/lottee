@@ -131,7 +131,7 @@
           <button
             type="button"
             class="btn btn-entry"
-            @click="requests()"
+            @click="requests"
           >
             {{ pages[page].button }}
           </button>
@@ -169,7 +169,12 @@ export default {
   name: 'Login',
   async fetch () {
     if (this.$route.query.user_id && this.$route.query.token) {
-      await this.requests('confirm/')
+      try {
+        const response = await this.$axios.post('/api/my-user/confirm/', { token: this.$route.query.token })
+        this.status = response.status
+      } catch (error) {
+        this.status = error.response.status
+      }
     }
   },
   fetchOnServer: false,
@@ -184,8 +189,10 @@ export default {
       ],
       messages: {
         204: '',
-        200: 'Почта подтверждена',
-        201: 'Подтверждение отправлено на почту, возможно в папке спам',
+        200: 'Почта подтверждена, войдите',
+        399: 'Адрес свободен',
+        400: 'Эта почта уже зарегистрирована попробуйте войти',
+        401: 'Не верные данные',
         404: 'Пользователь не найден',
         406: 'Почта не подтверждена',
         408: 'Токен устарел или не верен'
@@ -213,38 +220,80 @@ export default {
   methods: {
     async checkEmail () {
       if (this.isEmailValid) {
-        await this.requests('confirm/', 'PUT')
+        try {
+          const response = await this.$axios.put('/api/my-user/confirm/', { email: this.user.email })
+          this.status = !this.page && response.status === 204 ? 400 : response.status
+        } catch (error) {
+          this.status = !this.page && error.response.status === 404 ? 399 : error.response.status
+        }
       }
     },
     switchPage (page) {
       this.status = 204
       this.$router.replace({ name: 'auth', query: { page } })
     },
-    async login (action) {
-      await this.$store.dispatch(`user/${action || this.pages[this.page].name_eng}`, {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        token: this.$route.query.token
-      })
+    requests () {
+      switch (this.page) {
+        case 0:
+          this.register()
+          break
+        case 1:
+          this.login()
+          break
+        case 2:
+          this.reset()
+          break
+        case 3:
+          this.confirm()
+      }
     },
-    async requests (link, method = 'POST') {
+    async register () {
       try {
-        const response = await this.$axios({
-          url: `/api/my-user/${link || this.pages[this.page].link}`,
-          method,
-          data: this.user
-        })
-        this.status = response.status
-        // this.$router.replace(`/auth?page=${this.pages[this.page].extra}`)
+        await this.$axios.post('/api/my-user/create/', this.user)
+        this.$nuxt.$emit('snackbar', { color: 'success', text: 'Подтверждение отправлено на указанную почту' })
+        this.$router.push('/')
       } catch (error) {
         this.status = error.response.status
       }
     },
+    async login () {
+      try {
+        await this.$auth.loginWith('local', { data: this.user })
+        this.$nuxt.$emit('snackbar', { color: 'success', text: 'ВХОД ВЫПОЛНЕН' })
+        this.$store.dispatch('track/trackerTimer')
+        this.$router.push('/')
+      } catch (error) {
+        this.status = error.response.status
+      }
+    },
+    async reset () {
+      try {
+        await this.$axios.post('/api/my-user/password_reset/', this.user)
+        this.$nuxt.$emit('snackbar', { color: 'primary', text: 'Инструкция сброса отравлена на почту' })
+        this.$router.push('/')
+      } catch (error) {
+        this.$nuxt.$emit('snackbar', { color: 'error', text: 'Нет пользователя с таким адресом' })
+      }
+    },
+    async confirm () {
+      try {
+        await this.$axios.post('/api/my-user/password_reset/confirm/', this.user)
+        this.$nuxt.$emit('snackbar', { color: 'success', text: 'Новый пароль сохранен' })
+        this.$router.push('/')
+      } catch (error) {
+        this.switchPage(2)
+        this.status = 408
+      }
+    },
     async sendConfirm () {
       try {
-        await this.$axios.patch('/api/my-user/confirm/', { email: this.email })
-          .then((response) => { this.status = response.status })
+        const response = await this.$axios.patch('/api/my-user/confirm/', { email: this.user.email })
+        if (response.status === 201) {
+          this.$nuxt.$emit('snackbar', { color: 'primary', text: 'Подтверждение отправлено на почту, возможно в папке спам' })
+          this.$router.push('/')
+        } else {
+          this.status = response.status
+        }
       } catch (error) {
         this.status = error.response.status
       }
@@ -259,6 +308,9 @@ export default {
   max-width: 350px;
   padding: 20px;
   color: white;
+  &-primary {
+    background-color: rgba(0, 0, 255, 0.7);
+  }
   &-success {
     background-color: rgba(0, 255, 0, 0.7);
   }

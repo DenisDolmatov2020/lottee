@@ -18,7 +18,18 @@ class UserCreateView(CreateAPIView):
     queryset = get_user_model()
     serializer_class = UserSerializer
 
+    @staticmethod
+    def get_object_or_none(obj, **kwargs):
+        try:
+            return obj.objects.get(**kwargs)
+        except obj.DoesNotExist:
+            return None
+
     def create(self, request, *args, **kwargs):
+        user = self.get_object_or_none(User, email=request.data['email'])
+        if user and not user.is_active:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -58,14 +69,12 @@ class UserConfirmViewSet(ViewSet):
     # подтверждение почты
     def create(self, request):
         data = JSONParser().parse(request)
-        user = self.get_object_or_none(User, pk=data['user_id'])
-        token = self.get_object_or_none(Token, user_id=data['user_id'])
+        token = self.get_object_or_none(Token, token=data['token'])
+
         if token and data['token'] == token.token:
             token.delete()
-            user.is_active = True
-            user.save()
-
-        if user.is_active:
+            token.user.is_active = True
+            token.user.save()
             return Response({'message': 'Почта подтверждена, войдите'}, status=status.HTTP_200_OK)
         return Response({'message': 'Токен устарел или не верен'}, status=status.HTTP_408_REQUEST_TIMEOUT)
 
@@ -90,7 +99,7 @@ class UserConfirmViewSet(ViewSet):
         user = self.get_object_or_none(User, email=data['email'])
         if user and not user.is_active:
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
-        if not user:
+        elif not user:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

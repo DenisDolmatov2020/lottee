@@ -263,10 +263,7 @@ export default {
     },
     async requests (page) {
       try {
-        const response = await this.$axios.post(
-          `/api/my-user/${page || this.page}/`,
-          this.user
-        )
+        const response = await this.$axios.post(`/api/my-user/${page || this.page}/`, this.user)
         this.status = response.status
         this.$router.replace(`/login?page=${this.pages[this.page].extra}`)
       } catch (error) {

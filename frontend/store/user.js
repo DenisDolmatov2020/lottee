@@ -8,10 +8,8 @@ export const actions = {
         method: 'POST',
         data: user
       })
-      if (response.status === 201) {
         $nuxt.$emit('snackbar',
           { color: 'success', text: 'Подтверждение отправлено на указанную почту' })
-      }
     } catch (error) {
       $nuxt.$emit('snackbar',
         { color: 'error', icon: 'mdi-list-status', text: 'Эта почта уже зарегистрирована попробуйте войти' }
@@ -76,7 +74,7 @@ export const actions = {
   },
   async logout () {
     await this.$auth.logout()
-    this.$router.push('/login')
+    this.$router.push('/auth')
     $nuxt.$emit('snackbar', { color: 'primary', text: 'Вы вышли из профиля' })
   }
 }
