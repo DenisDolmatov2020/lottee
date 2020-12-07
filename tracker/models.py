@@ -11,4 +11,4 @@ class Tracker(models.Model):
     date = models.DateField(auto_now_add=False, auto_now=True)
 
     def __str__(self):
-        return '%s, %s, %s' % (self.user, self.days_row, self.date)
+        return '%s, %s' % (str(self.days_row), self.date)

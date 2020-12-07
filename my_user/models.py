@@ -36,31 +36,26 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user(self, email, phone, password, **extra_fields):
+    def _create_user(self, email, password, **extra_fields):
         """Create and save a User with the given email and password."""
-        if not email or phone:
+        if not email:
             # email = 'admin@lottee.com'
             raise ValueError('The given email or phone must be set')
-        elif email:
+        else:
             email = self.normalize_email(email)
             user = self.model(email=email, **extra_fields)
             user.set_password(password)
             user.save(using=self._db)
             return user
-        elif phone:
-            user = self.model(phone=phone, **extra_fields)
-            user.set_password(password)
-            user.save(using=self._db)
-            return user
 
-    def create_user(self, email, phone, password=None, **extra_fields):
+    def create_user(self, email, password=None, **extra_fields):
         """Create and save a regular User with the given email and password."""
         extra_fields.setdefault('locale', 'ru')
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, phone, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, email, phone, password, **extra_fields):
+    def create_superuser(self, email, password, **extra_fields):
         """Create and save a SuperUser with the given email and password."""
         extra_fields.setdefault('locale', 'en')
         extra_fields.setdefault('is_staff', True)
@@ -71,7 +66,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(email, phone, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
@@ -93,16 +88,20 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return self.name or 'no have name'
 
 
 class Token(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=255)
 
+    def __str__(self):
+        return str(self.token)
+
 
 @receiver(pre_save, sender=User)
 def set_new_user_inactive(sender, instance, **kwargs):
+    print('SENDER {} INSTANCE {}'.format(sender, instance))
     if instance._state.adding is True:
         print('Creating Inactive User')
         instance.is_active = False

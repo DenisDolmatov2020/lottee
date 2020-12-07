@@ -23,3 +23,6 @@ class Number(models.Model):
     won = models.BooleanField(verbose_name='winner', default=False)
     created = models.DateTimeField(verbose_name='Date create', auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(verbose_name='Date update', auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return str(self.num)
