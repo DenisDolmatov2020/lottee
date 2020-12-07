@@ -5,7 +5,7 @@
       v-for="prize in prizes"
       :key="prize.id"
       class="ma-4"
-      color="pink"
+      color="deep-purple"
       dark
       icon="mdi-gift"
       prominent

@@ -27,6 +27,7 @@
           :cols="5"
         >
           <button
+            v-if="my_profile"
             type="button"
             class="btn btn-entry btn-lot"
             @click="$router.push({ name: 'password' })"
