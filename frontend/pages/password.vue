@@ -1,61 +1,33 @@
 <template>
   <div>
-    <Header :page="{ title: 'Логин', color: 'blue', dark: true, update: false }" />
+    <Header :page="{ title: 'Смена пароля', color: '#00cae3', dark: true, update: false }" />
 
     <div class="user-container">
       <div class="content-w3ls">
-        <div class="content-bottom">
+        <form
+          v-if="!$fetchState.pending"
+          class="content-bottom"
+        >
           <div
-            v-if="$route.query.message"
-            class="login-first"
+            v-if="message"
+            :class="['login-first', 'login-first-error']"
           >
-            Необходимо войти
+            {{ message }}
           </div>
-          <div class="form-buttons">
-            <h2>
-              {{ log ? 'Логин' : 'Регистрация' }}
-            </h2>
-            <h5 @click="log = !log">
-              {{ log ? 'Регистрация' : 'Логин' }}
-            </h5>
-          </div>
-          <div
-            v-if="!log"
-            class="field-group"
-          >
+          <div class="field-group">
             <img
-              alt="user icon"
+              alt="lock icon"
               class="icon-field"
-              :src="require('assets/icons/user.svg')"
+              :src="require('assets/icons/lock.svg')"
             >
             <div class="wthree-field">
               <input
-                v-model="username"
-                name="username"
-                type="text"
-                value=""
-                placeholder="Username"
-                required
-              >
-            </div>
-          </div>
-          <div
-            class="field-group"
-          >
-            <img
-              alt="email icon"
-              class="icon-field"
-              :src="require('assets/icons/email.svg')"
-            >
-            <div class="wthree-field">
-              <input
-                id="email"
-                v-model="email"
-                name="email"
-                type="email"
-                value=""
-                placeholder="E-mail"
-                required
+                id="old_password"
+                v-model="old_password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="on"
+                placeholder="Старый пароль"
               >
             </div>
           </div>
@@ -71,14 +43,12 @@
                 v-model="password"
                 name="password"
                 :type="showPassword ? 'text' : 'password'"
+                autocomplete="on"
                 placeholder="Пароль"
               >
             </div>
           </div>
-          <div
-            v-if="!log"
-            class="field-group"
-          >
+          <div class="field-group">
             <img
               alt="lock icon"
               class="icon-field"
@@ -87,9 +57,10 @@
             <div class="wthree-field">
               <input
                 id="password-repeat"
-                v-model="password_repeat"
+                v-model="repeat_password"
                 name="password-repeat"
                 :type="showPassword ? 'text' : 'password'"
+                autocomplete="on"
                 placeholder="Повтор пароля"
               >
             </div>
@@ -104,16 +75,14 @@
             </div>
           </div>
 
-          <div
+          <button
+            type="button"
             class="btn btn-entry"
-            @click="login"
+            @click="login()"
           >
-            {{ log ? 'Войти' : 'Создать' }}
-          </div>
-          <div v-if="log" class="forgot-password">
-            забыли пароль?
-          </div>
-        </div>
+            Сменить
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -121,59 +90,66 @@
 
 <script>
 export default {
-  name: 'Login',
+  async fetch () {},
+  fetchOnServer: false,
   data () {
     return {
-      log: true,
+      message: '',
       showPassword: false,
-      username: '',
-      email: '',
+      old_password: '',
       password: '',
-      password_repeat: ''
+      repeat_password: ''
     }
   },
   methods: {
+    switchPage (page) {
+      this.$router.replace({ name: 'login', query: { page } })
+    },
     async login () {
-      if (this.log) {
-        await this.$store.dispatch('user/login', { email: this.email, password: this.password })
-      } else {
-        await this.$store.dispatch('user/register', {
-          name: this.username,
-          email: this.email,
-          password: this.password
+      await this.$axios.patch('/api/my-user/update-password/',
+        {
+          old_password: this.old_password,
+          password: this.password,
+          repeat_password: this.repeat_password
         })
-      }
+        .then(() => {
+          this.$router.push({ name: 'profile' })
+          this.$nuxt.$emit('snackbar', { color: 'success', text: 'Пароль изменен' })
+        })
+        .catch((error) => { this.message = error.response.data.message[0] })
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .login-first {
   text-align: center;
   max-width: 350px;
   padding: 20px;
+  margin-bottom: 20px;
   color: white;
-  background-color: rgba(255, 0, 0, 0.7);
-}
-.form-buttons {
-  display: flex;
-  justify-content: space-between;
-  justify-self: center;
+  &-error {
+    background-color: rgba(255, 0, 0, 1);
+  }
 }
 .icon-field {
   width: 30px;
   margin-right: 5px;
 }
 .user-container {
-  /* background: url(~assets/view.jpeg) no-repeat center center fixed; */
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  padding: 100px 0 180px 0;
+  padding: 50px 0 50px 0;
+}
+.pages-bottom {
+  display: flex;
+  justify-content: space-between;
 }
 .forgot-password {
+  cursor: pointer;
   margin-top: 1em;
   color: #81D4FA;
 }
@@ -227,9 +203,10 @@ body {
 }
 
 .content-bottom {
+  min-height: 25em;
   padding: 3em 4em;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 1px 1px 1px 0px;
+  background: #00cae3;  /* rgba(0, 0, 0, 0.4); */
+  border-radius: 1px 1px 1px 0;
   margin: 0 1em;
   box-shadow: 12px 12px rgba(0, 0, 0, 0.6);
   -webkit-box-shadow: 12px 12px rgba(0, 0, 0, 0.6);
@@ -344,7 +321,7 @@ h5 {
 
 .field-group .wthree-field {
   flex: 2 55%;
-  -webkit-box-flex:2 55%;     /* OLD - iOS 6-, Safari 3.1-6 */
+  -webkit-box-flex: 2 55%;     /* OLD - iOS 6-, Safari 3.1-6 */
   -moz-box-flex: 2 55%;        /* OLD - Firefox 19- */
   -webkit-flex: 2 55%;          /* Chrome */
   -ms-flex: 2 55%;             /* IE 10 */
@@ -490,7 +467,7 @@ input:checked+.slider:before {
     float: none;
   }
   ul.list-login li:nth-child(2){
-    margin:1em 0 0;
+    margin: 1em 0 0;
   }
 }
 
@@ -522,7 +499,7 @@ input:checked+.slider:before {
   }
   .copyright p {
     padding:0 1em 2em;
-    letter-spacing: 0px;
+    letter-spacing: 0;
   }
 }
 @media screen and (max-width: 320px) {

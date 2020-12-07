@@ -8,7 +8,7 @@ class Tracker(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     days_row = models.PositiveSmallIntegerField(verbose_name='Track days in one row time', default=1)
-    date = models.DateField(auto_now_add=True, auto_now=False)
+    date = models.DateField(auto_now_add=False, auto_now=True)
 
     def __str__(self):
-        return '%s, %s, %s' % (self.user, self.days_row, self.date)
+        return '%s, %s' % (str(self.days_row), self.date)

@@ -1,16 +1,15 @@
 <template>
-  <v-card id="create">
+  <div id="create">
     <v-tooltip v-if="!$auth.loggedIn" left fixed>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
-          fixed
           color="blue darken-2"
           fab
           dark
           class="btn-no-auth"
           v-bind="attrs"
           v-on="on"
-          @click="drawer('/login')"
+          @click="drawer('/auth')"
         >
           <v-icon>
             mdi-account
@@ -109,6 +108,7 @@
           dark
           small
           color="indigo"
+          @click="drawer('/energy')"
         >
           <v-icon>mdi-flash</v-icon>
         </v-btn>
@@ -131,7 +131,7 @@
         <span>Выйти</span>
       </v-tooltip>
     </v-speed-dial>
-  </v-card>
+  </div>
 </template>
 <script>
 import { mapActions } from 'vuex'
@@ -145,24 +145,15 @@ export default {
     drawer (url) {
       this.$router.push(url)
     },
-    ...mapActions('user', [
-      'logout'
-    ])
+    ...mapActions('user', ['logout'])
   }
 }
 </script>
 <style scoped>
   /* This is for documentation purposes and will not be needed in your application */
-  #create .v-speed-dial {
-    position: absolute;
-  }
-
-  #create .v-btn--floating {
-    position: relative;
-  }
   .btn-no-auth {
-    z-index: 1;
     position: absolute;
+    z-index: 1;
     top: 16px;
     right: 16px;
   }

@@ -1,12 +1,15 @@
 from django.db import connection
 from rest_framework import status
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-
+from rest_framework.viewsets import ViewSet
+from my_user.serializers import TokenSerializer, UpdatePasswordSerializer
+from my_user.models import Token, User
+from my_user.services import send_confirm
 from number.models import Number
-from rest_framework.generics import get_object_or_404, CreateAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
 from my_user.serializers import UserSerializer
 
 
@@ -15,22 +18,96 @@ class UserCreateView(CreateAPIView):
     queryset = get_user_model()
     serializer_class = UserSerializer
 
+    @staticmethod
+    def get_object_or_none(obj, **kwargs):
+        try:
+            return obj.objects.get(**kwargs)
+        except obj.DoesNotExist:
+            return None
+
     def create(self, request, *args, **kwargs):
+        user = self.get_object_or_none(User, email=request.data['email'])
+        if user and not user.is_active:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        refresh = RefreshToken.for_user(user)
+
+        send_confirm(user)
+
         return Response(
-            {'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
+            serializer.data,
             status=status.HTTP_201_CREATED
         )
+
+
+class UpdatePasswordView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UpdatePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserConfirmViewSet(ViewSet):
+    permission_classes = [AllowAny]
+    queryset = Token.objects.all()
+    serializer_class = TokenSerializer
+
+    @staticmethod
+    def get_object_or_none(obj, **kwargs):
+        try:
+            return obj.objects.get(**kwargs)
+        except obj.DoesNotExist:
+            return None
+
+    # подтверждение почты
+    def create(self, request):
+        data = JSONParser().parse(request)
+        token = self.get_object_or_none(Token, token=data['token'])
+
+        if token and data['token'] == token.token:
+            token.delete()
+            token.user.is_active = True
+            token.user.save()
+            return Response({'message': 'Почта подтверждена, войдите'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Токен устарел или не верен'}, status=status.HTTP_408_REQUEST_TIMEOUT)
+
+    # Повторная отправка подтверждения или проверка статуса регистрации почты
+    def patch(self, request):
+        data = JSONParser().parse(request)
+        user = self.get_object_or_none(User, email=data['email'])
+        if not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        elif user.is_active:
+            return Response(status=status.HTTP_200_OK)
+
+        token = self.get_object_or_none(Token, user=user)
+        if token:
+            token.delete()
+        send_confirm(user)
+        return Response(status=status.HTTP_201_CREATED)
+
+    # Проверка статуса регистрации почты
+    def put(self, request):
+        data = JSONParser().parse(request)
+        user = self.get_object_or_none(User, email=data['email'])
+        if user and not user.is_active:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        elif not user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserRetrieveUpdateView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = get_user_model()
     serializer_class = UserSerializer
-    # parser_classes = (MultiPartParser,)
 
     def retrieve(self, request, *args, **kwargs):
         serializer = self.get_serializer(request.user)

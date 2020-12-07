@@ -17,7 +17,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async reserve({ state }) {
+  async reserve({ state, dispatch }) {
     try {
       const response = await this.$axios({
         url: '/api/number/',
@@ -29,7 +29,8 @@ export const actions = {
       } else {
         $nuxt.$emit('snackbar', { color: 'error', text: 'Вам не удалось взять номер' })
       }
-      this.$auth.fetchUser()
+      await this.$auth.fetchUser()
+      await dispatch('fetchLot', state.lot.id)
     } catch (error) {
       $nuxt.$emit('snackbar', { icon: 'mdi-flash', color: 'error', text: 'Недостаточно энергии' })
     }
@@ -66,33 +67,25 @@ export const actions = {
   async fetchLot ({ state, commit }, lot_id) {
     try {
       const response = await this.$axios({
-        url: `${state.url}/${lot_id}`,
-        headers: { Authorization: '' },
-        method: 'GET'
+        url: state.url + lot_id,
+        method: 'GET',
+        headers: { Authorization: '' }
       })
       if (response.status === 200) {
         await commit('SET_LOT', response.data)
       }
     } catch (error) {
       $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лота' })
+      this.$router.push('/')
     }
   },
   async fetchLots ({ state, commit }) {
-    try {
-      const response = await this.$axios({
-        url: state.url,
-        headers: { Authorization: '' },
-        method: 'GET'
-      })
-      if (response.status === 200) {
-        commit('SET_LOTS', response.data)
-      }
-    } catch (error) {
-      console.log(error)
-      $nuxt.$emit('snackbar', { color: 'error', text: 'Ошибка при загрузке лотов' })
-    }
+      await this.$axios.get(state.url)
+        .then((response) => commit('SET_LOTS', response.data))
+        .catch ((error) => {console.error(error)})
   }
 }
+
 
 export const getters = {
   lot: s => s.lot

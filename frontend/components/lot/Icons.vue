@@ -20,7 +20,7 @@
       mdi-table-account
     </v-icon>
     <span class="subheading font-weight-bold green--text">
-      {{ lot.players }}
+      {{ lot.free_numbers ? `${lot.free_numbers}/${ lot.players }` : lot.players }}
     </span>
   </v-row>
 </template>

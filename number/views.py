@@ -33,36 +33,13 @@ class NumberUpdateView(UpdateAPIView):
                     lot_number.save(update_fields=['user'])
                     if len(lot_numbers_free) <= 1 and lot_number.lot.active:
                         choose_winners(lot_number.lot)
-
-                    print('RESPONSE 2000 ', lot_number)
                     return Response(
                         status=status.HTTP_200_OK,
                         data={'number': lot_number.num, 'active': lot_number.lot.active}
                     )
-        # serializer = NumberSerializer(numbers, many=True)
-        # print('Total requests count: %s' % len(connection.queries))
-        # data=serializer.data,
-        return Response(status=status.HTTP_403_FORBIDDEN)
-
-    '''def patch(request, pk):
-        
-        
-        
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        
-            return Response(
-                data={'No have energy' if lot_number.lot.energy > request.user.energy else 'You\'r lot'},
-                status=status.HTTP_424_FAILED_DEPENDENCY
-                if lot_number.lot.energy > request.user.energy
-                else status.HTTP_428_PRECONDITION_REQUIRED
-            )
-        
-        serializer = NumberSerializer(lot_number)
-        print('Total requests count: %s' % len(connection.queries))
-        return Response(
-            status=status.HTTP_200_OK,
-            data=serializer.data
-        )
-'''
+            else:
+                print('NO HAVE FREE')
+        else:
+            print('USER HAVE NUMBER')
+        print('405405405')
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

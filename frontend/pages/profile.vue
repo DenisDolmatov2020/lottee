@@ -6,13 +6,10 @@
         align="end"
         class="fill-height"
       >
-        <v-spacer />
         <v-col
           align-self="start"
-          class=""
           :cols="5"
           :offset="1"
-          :sm="11"
         >
           <v-avatar
             class="profile"
@@ -25,11 +22,21 @@
             </v-icon>
           </v-avatar>
         </v-col>
-        <v-spacer />
         <v-col
-          :cols="7"
-          :sm="12"
+          align-self="end"
+          :cols="5"
         >
+          <button
+            v-if="my_profile"
+            type="button"
+            class="btn btn-entry btn-lot"
+            @click="$router.push({ name: 'password' })"
+          >
+            Сменить пароль
+          </button>
+        </v-col>
+        <v-spacer />
+        <v-col>
           <v-list-item>
             <v-list-item-icon>
               <v-icon color="indigo">

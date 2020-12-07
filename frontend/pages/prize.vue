@@ -5,7 +5,7 @@
       v-for="prize in prizes"
       :key="prize.id"
       class="ma-4"
-      color="pink"
+      color="deep-purple"
       dark
       icon="mdi-gift"
       prominent
@@ -16,7 +16,7 @@
           Вы выиграли {{ prize.lot.title }}, номер #{{ prize.num }}
         </v-col>
         <v-col class="shrink">
-          <v-btn text @click="$router.push(`/lot/${prize.lot.id}`)">
+          <v-btn text @click="$router.push(`/${prize.lot.id}`)">
             Перейти
           </v-btn>
         </v-col>
