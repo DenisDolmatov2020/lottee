@@ -2,9 +2,9 @@ version: '3.7'
 
 services:
   web:
-    build:
-      context: ./
-      dockerfile: ./D
+    build: ./
+      # context: ./
+      # dockerfile: ./D
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./lottee:/usr/src/lottee/
