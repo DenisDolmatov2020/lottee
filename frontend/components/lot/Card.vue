@@ -27,7 +27,7 @@
               tile
               color="grey lighten-1"
             >
-              <v-img v-if="lot.images.length" :src="lot.images[0].url" />
+              <v-img v-if="lot.images && lot.images.length" :src="lot.images[0].url" />
               <v-icon v-else>
                 mdi-camera
               </v-icon>

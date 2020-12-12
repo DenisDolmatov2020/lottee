@@ -11,7 +11,8 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'preload', as: 'font', crossorigin: 'crossorigin', type: 'font/cursive', href: 'fonts/cursive' }
     ]
   },
   server: {

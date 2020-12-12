@@ -15,7 +15,7 @@
             {{ messages[status] }}
             <br>
             <span
-              v-if="status >= 405  && page !== 2"
+              v-if="status >= 405 && page !== 2"
               class="login-first-link"
               @click="sendConfirm"
             >
@@ -201,7 +201,7 @@ export default {
         401: 'Не верные данные',
         404: 'Пользователь не найден',
         406: 'Почта не подтверждена',
-        408: 'Токен устарел или не верен, поробуйте заново'
+        408: 'Токен устарел или не верен, попробуйте заново'
       },
       showPassword: false,
       user: {

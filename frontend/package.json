@@ -16,7 +16,8 @@
     "core-js": "^3.6.5",
     "nuxt": "^2.14.5",
     "nuxt-socket-io": "^1.1.11",
-    "vuex": "^3.5.1"
+    "vuex": "^3.5.1",
+    "yarn": "^1.22.10"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.5",
