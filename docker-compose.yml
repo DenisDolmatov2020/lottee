@@ -21,29 +21,8 @@ services:
       - .:/lottee
     ports:
       - "8000:8000"
-    depends_on:
-      - postgres
     networks:
       - main
 
-  redis:
-    image: redis:alpine
-    volumes:
-      - redis-data:/data
-    container_name: redis
-    networks:
-      - main
-
-  postgres:
-    container_name: postgres
-    image: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg-data:/postgresql/data
-    env_file: .env
-    restart: always
-    networks:
-      - main
-volumes:
-  postgres_data:
+networks:
+  main:
